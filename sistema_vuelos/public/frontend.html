@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Sistemas de Vuelos</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+
+<body class="bg-slate-900 text-white min-h-screen">
+
+<div class="max-w-6xl mx-auto p-6">
+
+    <h1 class="text-3xl font-bold mb-2">✈️ Sistemas de Vuelos</h1>
+    <p class="text-slate-400 text-sm mb-6">Frontend independiente — consume la API REST de Laravel</p>
+
+    <!-- MÓDULOS -->
+    <div class="flex gap-3 mb-6">
+        <button id="btn-aerolineas" onclick="cambiarModulo('aerolineas')" class="btn">Aerolíneas</button>
+        <button id="btn-vuelos"     onclick="cambiarModulo('vuelos')"     class="btn">Vuelos</button>
+        <button id="btn-pasajeros"  onclick="cambiarModulo('pasajeros')"  class="btn">Pasajeros</button>
+        <button id="btn-naves"      onclick="cambiarModulo('naves')"      class="btn">Naves</button>
+    </div>
+
+    <!-- FORMULARIO DE CREACIÓN -->
+    <div class="bg-slate-800 p-4 rounded mb-6 space-y-3">
+        <p class="text-slate-400 text-xs uppercase tracking-widest mb-1" id="labelForm">Nuevo registro</p>
+
+        <input id="inputTexto"  class="input" placeholder="Dato">
+        <input id="inputExtra1" class="input hidden" placeholder="">
+        <input id="inputExtra2" class="input hidden" placeholder="">
+
+        <!-- Select para aerolinea (en vuelos) o vuelo (en pasajeros) -->
+        <select id="selectExtra" class="input hidden"></select>
+
+        <button onclick="crear()" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded transition">
+            ➕ Crear
+        </button>
+    </div>
+
+    <!-- TABLA -->
+    <div class="max-h-[400px] overflow-y-auto rounded">
+        <table class="w-full text-center bg-slate-800 rounded overflow-hidden">
+            <thead>
+                <tr class="bg-slate-700 text-slate-300 text-sm uppercase tracking-wide">
+                    <th class="py-3 px-4">ID</th>
+                    <th class="py-3 px-4">Datos</th>
+                    <th class="py-3 px-4">Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="tabla"></tbody>
+        </table>
+    </div>
+
+</div>
+
+<!-- TOAST -->
+<div id="toast" class="hidden fixed top-5 right-5 px-4 py-2 rounded shadow text-white font-semibold z-50"></div>
+
+<!-- MODAL CONFIRMAR -->
+<div id="modal" class="hidden fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
+    <div class="bg-slate-800 border border-slate-600 p-6 rounded-xl text-center min-w-[300px]">
+        <p id="modalText" class="mb-4 text-lg"></p>
+        <div class="flex gap-3 justify-center">
+            <button onclick="confirmar()" class="bg-red-600 hover:bg-red-700 px-5 py-2 rounded transition">Aceptar</button>
+            <button onclick="cerrarModal()" class="bg-gray-600 hover:bg-gray-700 px-5 py-2 rounded transition">Cancelar</button>
+        </div>
+    </div>
+</div>
+
+<script>
+// ─────────────────────────────────────────────────────────────
+// CONFIGURACIÓN
+// ─────────────────────────────────────────────────────────────
+
+// ✅ URL base de la API — ajusta si usas artisan serve (8000) o Laragon (subcarpeta)
+// Opción A — Laragon (subcarpeta):
+const BASE = "http://localhost/sistema_vuelos/public/api";
+// Opción B — php artisan serve:
+// const BASE = "http://127.0.0.1:8000/api";
+
+const API = {
+    aerolineas : BASE + "/aerolineas",
+    vuelos     : BASE + "/vuelos",
+    pasajeros  : BASE + "/pasajeros",
+    naves      : BASE + "/naves",
+};
+
+let modulo         = "aerolineas";
+let accionPendiente = null;
+let editando       = null;   // ID del registro que se está editando
+
+// ─────────────────────────────────────────────────────────────
+// UTILIDADES UI
+// ─────────────────────────────────────────────────────────────
+
+function activarBoton() {
+    document.querySelectorAll(".btn").forEach(b => {
+        b.classList.remove("border-b-4", "border-blue-500", "text-blue-400");
+    });
+    document.getElementById("btn-" + modulo)
+        .classList.add("border-b-4", "border-blue-500", "text-blue-400");
+}
+
+function toast(msg, color = "green") {
+    const t = document.getElementById("toast");
+    t.className = `fixed top-5 right-5 px-4 py-2 rounded shadow text-white font-semibold z-50 bg-${color}-600`;
+    t.innerText = msg;
+    t.classList.remove("hidden");
+    setTimeout(() => t.classList.add("hidden"), 2500);
+}
+
+function abrirModal(texto, accion) {
+    document.getElementById("modalText").innerText = texto;
+    accionPendiente = accion;
+    document.getElementById("modal").classList.remove("hidden");
+}
+function cerrarModal() {
+    document.getElementById("modal").classList.add("hidden");
+    accionPendiente = null;
+}
+function confirmar() {
+    if (accionPendiente) accionPendiente();
+    cerrarModal();
+}
+
+// ─────────────────────────────────────────────────────────────
+// CAMBIAR MÓDULO
+// ─────────────────────────────────────────────────────────────
+
+function cambiarModulo(m) {
+    modulo   = m;
+    editando = null;
+
+    document.getElementById("inputTexto").value  = "";
+    document.getElementById("inputExtra1").value = "";
+    document.getElementById("inputExtra2").value = "";
+
+    configurarFormulario();
+    activarBoton();
+    cargarSelect();
+    cargar();
+}
+
+// ─────────────────────────────────────────────────────────────
+// CONFIGURAR FORM SEGÚN MÓDULO
+// ─────────────────────────────────────────────────────────────
+
+function configurarFormulario() {
+    const i1 = document.getElementById("inputTexto");
+    const i2 = document.getElementById("inputExtra1");
+    const i3 = document.getElementById("inputExtra2");
+
+    i2.classList.add("hidden");
+    i3.classList.add("hidden");
+
+    const labels = {
+        aerolineas : "Nombre de la aerolínea",
+        vuelos     : "Destino del vuelo",
+        pasajeros  : "Nombre completo del pasajero",
+        naves      : "Matrícula (ej: CP-1024)",
+    };
+    document.getElementById("labelForm").innerText = "Nuevo registro — " + modulo;
+    i1.placeholder = labels[modulo] || "Dato";
+
+    if (modulo === "naves") {
+        i2.placeholder = "Modelo (ej: Boeing 737)";
+        i3.placeholder = "Capacidad (ej: 180)";
+        i2.classList.remove("hidden");
+        i3.classList.remove("hidden");
+    }
+}
+
+// ─────────────────────────────────────────────────────────────
+// SELECT DINÁMICO (aerolíneas para vuelos / vuelos para pasajeros)
+// ─────────────────────────────────────────────────────────────
+
+function cargarSelect() {
+    const select = document.getElementById("selectExtra");
+
+    if (modulo === "vuelos") {
+        axios.get(API.aerolineas).then(res => {
+            select.innerHTML = '<option value="">— Selecciona aerolínea —</option>';
+            res.data.data.forEach(a => {
+                select.innerHTML += `<option value="${a.id}">${a.nombre}</option>`;
+            });
+            select.classList.remove("hidden");
+        });
+
+    } else if (modulo === "pasajeros") {
+        axios.get(API.vuelos).then(res => {
+            select.innerHTML = '<option value="">— Selecciona vuelo —</option>';
+            const lista = res.data.data || res.data;
+            lista.forEach(v => {
+                select.innerHTML += `<option value="${v.id}">#${v.id} → ${v.destino}</option>`;
+            });
+            select.classList.remove("hidden");
+        });
+
+    } else {
+        select.classList.add("hidden");
+        select.innerHTML = "";
+    }
+}
+
+// ─────────────────────────────────────────────────────────────
+// LISTAR
+// ─────────────────────────────────────────────────────────────
+
+function cargar() {
+    axios.get(API[modulo])
+        .then(res => {
+            const datos = res.data.data || res.data;
+            let html = "";
+
+            if (!datos || datos.length === 0) {
+                html = `<tr><td colspan="3" class="py-8 text-slate-500">Sin registros todavía.</td></tr>`;
+                document.getElementById("tabla").innerHTML = html;
+                return;
+            }
+
+            datos.forEach(d => {
+
+                // ── Contenido visible según módulo ──
+                let contenido = "";
+                if (modulo === "naves") {
+                    contenido = `<strong>${d.identificador}</strong> &nbsp;|&nbsp; ${d.info_tecnica}`;
+                } else if (modulo === "vuelos") {
+                    // ✅ Mostramos destino + aerolínea si está disponible
+                    contenido = `<strong>${d.destino}</strong>` +
+                        (d.aerolinea ? ` <span class="text-slate-400 text-sm">— ${d.aerolinea}</span>` : "");
+                } else {
+                    contenido = d.nombre || d.nombre_completo || d.modelo || "—";
+                }
+
+                // ── Fila en modo EDICIÓN ──
+                if (editando === d.id) {
+                    if (modulo === "vuelos") {
+                        // ✅ CORREGIDO: Para vuelos mostramos input destino + select aerolínea
+                        html += `
+                        <tr class="border-t border-slate-700 bg-slate-700/30">
+                            <td class="py-3 px-4 text-slate-400">${d.id}</td>
+                            <td class="py-3 px-4">
+                                <div class="flex gap-2 justify-center flex-wrap">
+                                    <input id="edit-destino-${d.id}"
+                                           value="${d.destino}"
+                                           class="input w-40"
+                                           placeholder="Destino">
+                                    <select id="edit-aerolinea-${d.id}" class="input w-48">
+                                        <option value="">— Aerolínea —</option>
+                                    </select>
+                                </div>
+                            </td>
+                            <td class="py-3 px-4">
+                                <button onclick="guardar(${d.id})"
+                                        class="bg-green-600 hover:bg-green-700 px-3 py-1 rounded text-sm transition">
+                                    💾 Guardar
+                                </button>
+                                <button onclick="cancelar()"
+                                        class="bg-gray-600 hover:bg-gray-700 px-3 py-1 rounded text-sm ml-1 transition">
+                                    ✖ Cancelar
+                                </button>
+                            </td>
+                        </tr>`;
+
+                        // Cargamos las aerolíneas en el select del edit
+                        setTimeout(() => {
+                            axios.get(API.aerolineas).then(res => {
+                                const sel = document.getElementById(`edit-aerolinea-${d.id}`);
+                                if (!sel) return;
+                                sel.innerHTML = '<option value="">— Aerolínea —</option>';
+                                res.data.data.forEach(a => {
+                                    const selected = a.id == d.aerolinea_id ? "selected" : "";
+                                    sel.innerHTML += `<option value="${a.id}" ${selected}>${a.nombre}</option>`;
+                                });
+                            });
+                        }, 50);
+
+                    } else if (modulo === "naves") {
+                        // Naves: formulario completo en la fila
+                        const partes = d.info_tecnica.split(" (Capacidad: ");
+                        const modelo   = partes[0] || "";
+                        const capacidad = partes[1] ? partes[1].replace(")", "") : "";
+                        html += `
+                        <tr class="border-t border-slate-700 bg-slate-700/30">
+                            <td class="py-3 px-4 text-slate-400">${d.id}</td>
+                            <td class="py-3 px-4">
+                                <div class="flex gap-2 justify-center flex-wrap">
+                                    <input id="edit-matricula-${d.id}" value="${d.identificador}" class="input w-28" placeholder="Matrícula">
+                                    <input id="edit-modelo-${d.id}"    value="${modelo}"           class="input w-36" placeholder="Modelo">
+                                    <input id="edit-capacidad-${d.id}" value="${capacidad}"        class="input w-24" placeholder="Capacidad" type="number">
+                                </div>
+                            </td>
+                            <td class="py-3 px-4">
+                                <button onclick="guardar(${d.id})"
+                                        class="bg-green-600 hover:bg-green-700 px-3 py-1 rounded text-sm transition">
+                                    💾 Guardar
+                                </button>
+                                <button onclick="cancelar()"
+                                        class="bg-gray-600 hover:bg-gray-700 px-3 py-1 rounded text-sm ml-1 transition">
+                                    ✖ Cancelar
+                                </button>
+                            </td>
+                        </tr>`;
+
+                    } else {
+                        // Aerolineas y pasajeros — edición simple
+                        const valorActual = d.nombre || d.nombre_completo || "";
+                        html += `
+                        <tr class="border-t border-slate-700 bg-slate-700/30">
+                            <td class="py-3 px-4 text-slate-400">${d.id}</td>
+                            <td class="py-3 px-4">
+                                <input id="edit-${d.id}" value="${valorActual}" class="input max-w-xs mx-auto">
+                            </td>
+                            <td class="py-3 px-4">
+                                <button onclick="guardar(${d.id})"
+                                        class="bg-green-600 hover:bg-green-700 px-3 py-1 rounded text-sm transition">
+                                    💾 Guardar
+                                </button>
+                                <button onclick="cancelar()"
+                                        class="bg-gray-600 hover:bg-gray-700 px-3 py-1 rounded text-sm ml-1 transition">
+                                    ✖ Cancelar
+                                </button>
+                            </td>
+                        </tr>`;
+                    }
+
+                // ── Fila normal ──
+                } else {
+                    html += `
+                    <tr class="border-t border-slate-700 hover:bg-slate-700/30 transition">
+                        <td class="py-3 px-4 text-slate-400">${d.id}</td>
+                        <td class="py-3 px-4">${contenido}</td>
+                        <td class="py-3 px-4">
+                            <button onclick="editar(${d.id})"
+                                    class="bg-yellow-600 hover:bg-yellow-700 px-3 py-1 rounded text-sm transition">
+                                ✏ Editar
+                            </button>
+                            <button onclick="eliminar(${d.id})"
+                                    class="bg-red-600 hover:bg-red-700 px-3 py-1 rounded text-sm ml-1 transition">
+                                🗑 Eliminar
+                            </button>
+                        </td>
+                    </tr>`;
+                }
+            });
+
+            document.getElementById("tabla").innerHTML = html;
+        })
+        .catch(err => {
+            console.error("Error al cargar:", err);
+            toast("Error al conectar con la API", "red");
+        });
+}
+
+// ─────────────────────────────────────────────────────────────
+// CREAR
+// ─────────────────────────────────────────────────────────────
+
+function crear() {
+    const t  = document.getElementById("inputTexto").value.trim();
+    const e1 = document.getElementById("inputExtra1").value.trim();
+    const e2 = document.getElementById("inputExtra2").value.trim();
+    const s  = document.getElementById("selectExtra").value;
+
+    if (!t) { toast("Completa el campo principal", "red"); return; }
+
+    let data = {};
+    if (modulo === "aerolineas") data = { nombre: t };
+    if (modulo === "vuelos")     data = { destino: t, aerolinea_id: s };
+    if (modulo === "pasajeros")  data = { nombre_completo: t, vuelo_id: s };
+    if (modulo === "naves")      data = { matricula: t, modelo: e1, capacidad: parseInt(e2) || 0 };
+
+    axios.post(API[modulo], data)
+        .then(() => {
+            toast("✅ Creado correctamente");
+            document.getElementById("inputTexto").value  = "";
+            document.getElementById("inputExtra1").value = "";
+            document.getElementById("inputExtra2").value = "";
+            cargar();
+        })
+        .catch(err => {
+            const msg = err.response?.data?.message || "Error al crear";
+            toast("❌ " + msg, "red");
+        });
+}
+
+// ─────────────────────────────────────────────────────────────
+// EDITAR — activa modo edición en la fila
+// ─────────────────────────────────────────────────────────────
+
+function editar(id) {
+    editando = id;
+    cargar();
+}
+
+function cancelar() {
+    editando = null;
+    cargar();
+}
+
+// ─────────────────────────────────────────────────────────────
+// GUARDAR (PUT) — ✅ CORREGIDO para todos los módulos
+// ─────────────────────────────────────────────────────────────
+
+function guardar(id) {
+    let data = {};
+
+    if (modulo === "aerolineas") {
+        data.nombre = document.getElementById("edit-" + id).value.trim();
+    }
+
+    if (modulo === "vuelos") {
+        // ✅ CORREGIDO: recoge destino Y aerolinea_id del select inline
+        data.destino      = document.getElementById(`edit-destino-${id}`).value.trim();
+        data.aerolinea_id = document.getElementById(`edit-aerolinea-${id}`).value;
+    }
+
+    if (modulo === "pasajeros") {
+        data.nombre_completo = document.getElementById("edit-" + id).value.trim();
+    }
+
+    if (modulo === "naves") {
+        data.matricula = document.getElementById(`edit-matricula-${id}`).value.trim();
+        data.modelo    = document.getElementById(`edit-modelo-${id}`).value.trim();
+        data.capacidad = parseInt(document.getElementById(`edit-capacidad-${id}`).value) || 0;
+    }
+
+    axios.put(API[modulo] + "/" + id, data)
+        .then(() => {
+            toast("✅ Actualizado correctamente");
+            editando = null;
+            cargar();
+        })
+        .catch(err => {
+            const msg = err.response?.data?.message || "Error al actualizar";
+            toast("❌ " + msg, "red");
+        });
+}
+
+// ─────────────────────────────────────────────────────────────
+// ELIMINAR (DELETE) — ✅ CORREGIDO: usa la URL correcta
+// ─────────────────────────────────────────────────────────────
+
+function eliminar(id) {
+    abrirModal(`¿Eliminar registro #${id}?`, () => {
+        axios.delete(API[modulo] + "/" + id)
+            .then(() => {
+                toast("🗑 Eliminado correctamente");
+                cargar();
+            })
+            .catch(err => {
+                const msg = err.response?.data?.message || "Error al eliminar";
+                toast("❌ " + msg, "red");
+            });
+    });
+}
+
+// ─────────────────────────────────────────────────────────────
+// INIT
+// ─────────────────────────────────────────────────────────────
+cambiarModulo("aerolineas");
+
+</script>
+
+<style>
+    .btn   { background: #334155; padding: 8px 14px; border-radius: 8px; transition: all 0.15s; }
+    .btn:hover { background: #475569; }
+    .input { width: 100%; padding: 8px 12px; border-radius: 8px; background: #0f172a; border: 1px solid #334155; color: #f1f5f9; }
+    .input:focus { outline: none; border-color: #3b82f6; }
+</style>
+
+</body>
+</html>

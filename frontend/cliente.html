@@ -1,0 +1,1660 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AeroVuela - Reserva tus Vuelos</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3a0ca3;
+            --secondary: #4cc9f0;
+            --accent: #f72585;
+            --success: #06d6a0;
+            --warning: #ffd166;
+            --danger: #ef476f;
+            --dark: #1a1a2e;
+            --light: #f8f9fa;
+            --glass: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+            min-height: 100vh;
+            color: #fff;
+        }
+
+        /* Login Styles */
+        .login-wrapper {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background: 
+                radial-gradient(ellipse at top, rgba(67, 97, 238, 0.2) 0%, transparent 50%),
+                linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+        }
+
+        .login-card {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            width: 100%;
+            max-width: 420px;
+            padding: 40px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4);
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .login-logo {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 2.5rem;
+            box-shadow: 0 10px 30px rgba(67, 97, 238, 0.4);
+        }
+
+        .login-header h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, #fff 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .login-header p {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .form-group input {
+            background: rgba(255, 255, 255, 0.08);
+            color: #fff;
+        }
+
+        .form-group select {
+            background: #0f0f23 !important;
+            color: #ffffff !important;
+            border: 1px solid #4cc9f0 !important;
+            cursor: pointer;
+        }
+        
+        .form-group select option {
+            background: #0f0f23 !important;
+            color: #ffffff !important;
+            padding: 12px;
+        }
+
+        #reserva-clase {
+            background: linear-gradient(135deg, #4361ee, #3a0ca3) !important;
+            color: #ffffff !important;
+            font-weight: 600;
+            border: 2px solid #4cc9f0 !important;
+        }
+
+        #reserva-clase option {
+            background: #0f0f23 !important;
+            color: #ffffff !important;
+            padding: 12px;
+        }
+
+        .form-group input::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: rgba(67, 97, 238, 0.1);
+        }
+
+        .btn {
+            padding: 14px 28px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            width: 100%;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(67, 97, 238, 0.4);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, var(--success) 0%, #05b588 100%);
+            color: white;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, var(--danger) 0%, #dc2626 100%);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid var(--glass-border);
+        }
+
+        .toggle-text {
+            text-align: center;
+            margin-top: 25px;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .toggle-text a {
+            color: var(--secondary);
+            text-decoration: none;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .alert {
+            padding: 14px 18px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            display: none;
+            font-size: 0.9rem;
+        }
+
+        .alert-success {
+            background: rgba(6, 214, 160, 0.15);
+            color: var(--success);
+            border: 1px solid rgba(6, 214, 160, 0.3);
+        }
+
+        .alert-error {
+            background: rgba(239, 71, 111, 0.15);
+            color: var(--danger);
+            border: 1px solid rgba(239, 71, 111, 0.3);
+        }
+
+        /* Dashboard Cliente */
+        .dashboard {
+            display: none;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--glass-border);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .header-logo i {
+            color: var(--primary);
+        }
+
+        .header-logo span {
+            background: linear-gradient(135deg, #fff 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header-user {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--accent) 0%, #d61f69 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+        }
+
+        .btn-logout {
+            padding: 10px 20px;
+            background: rgba(239, 71, 111, 0.2);
+            border: 1px solid rgba(239, 71, 111, 0.3);
+            color: var(--danger);
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-logout:hover {
+            background: var(--danger);
+            color: white;
+        }
+
+        .main-content {
+            padding: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        /* Buscador de Vuelos */
+        .search-box {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .search-box h2 {
+            margin-bottom: 25px;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .search-box h2 i {
+            color: var(--primary);
+        }
+
+        .search-filters {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .search-filters input, .search-filters select {
+            padding: 14px 16px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            color: #fff;
+            font-size: 1rem;
+        }
+
+        .search-filters input:focus, .search-filters select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .search-filters input::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        /* Cards */
+        .flight-card {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 20px;
+            transition: all 0.3s;
+            display: grid;
+            grid-template-columns: 1fr 2fr 1fr;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .flight-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+            border-color: var(--primary);
+        }
+
+        .flight-info h3 {
+            font-size: 1.3rem;
+            margin-bottom: 8px;
+        }
+
+        .flight-info .airline {
+            color: var(--secondary);
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .flight-route {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .flight-time {
+            text-align: center;
+        }
+
+        .flight-time .time {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .flight-time .city {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .flight-arrow {
+            color: var(--primary);
+            font-size: 1.5rem;
+        }
+
+        .flight-price {
+            text-align: right;
+        }
+
+        .flight-price .price {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--success);
+        }
+
+        .flight-price .currency {
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .flight-price .btn {
+            margin-top: 10px;
+            width: 100%;
+        }
+
+        /* Mis Reservas */
+        .reservas-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+        }
+
+        .reserva-card {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 25px;
+            transition: all 0.3s;
+        }
+
+        .reserva-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .reserva-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .reserva-codigo {
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        .reserva-details {
+            display: grid;
+            gap: 12px;
+        }
+
+        .reserva-detail {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .reserva-detail i {
+            color: var(--primary);
+            width: 20px;
+        }
+
+        .reserva-footer {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid var(--glass-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .reserva-total {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--success);
+        }
+
+        /* Navegación */
+        .nav-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 8px;
+            border-radius: 14px;
+            width: fit-content;
+        }
+
+        .nav-tab {
+            padding: 12px 24px;
+            background: transparent;
+            border: none;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 10px;
+            transition: all 0.3s;
+        }
+
+        .nav-tab.active, .nav-tab:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: #1a1a2e;
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            width: 100%;
+            max-width: 420px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            padding: 22px 25px;
+            border-bottom: 1px solid var(--glass-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h3 {
+            color: white;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: rgba(255, 255, 255, 0.6);
+            cursor: pointer;
+        }
+
+        .modal-body {
+            padding: 25px;
+        }
+
+        .modal-footer {
+            padding: 20px 25px;
+            border-top: 1px solid var(--glass-border);
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            opacity: 0.3;
+            color: var(--primary);
+        }
+
+        .empty-state h3 {
+            margin-bottom: 10px;
+            color: white;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .loading i {
+            font-size: 2rem;
+            animation: spin 1s linear infinite;
+            color: var(--primary);
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .badge-success { background: rgba(6, 214, 160, 0.2); color: var(--success); }
+        .badge-warning { background: rgba(255, 209, 102, 0.2); color: var(--warning); }
+        .badge-danger { background: rgba(239, 71, 111, 0.2); color: var(--danger); }
+        .badge-info { background: rgba(67, 97, 238, 0.2); color: var(--secondary); }
+
+        .flight-details-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid var(--glass-border);
+        }
+
+        .flight-detail {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .flight-detail i {
+            color: var(--primary);
+        }
+
+        @media (max-width: 768px) {
+            .search-filters {
+                grid-template-columns: 1fr;
+            }
+            .flight-card {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+            .flight-route {
+                flex-direction: column;
+            }
+            .flight-price {
+                text-align: center;
+            }
+            .header {
+                padding: 15px;
+            }
+            .nav-tabs {
+                width: 100%;
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Login View -->
+    <div class="login-wrapper" id="login-view">
+        <div class="login-card">
+            <div class="login-header">
+                <div class="login-logo">
+                    <i class="fas fa-paper-plane"></i>
+                </div>
+                <h1>AeroVuela</h1>
+                <p>Reserva tus vuelos fácil y rápido</p>
+            </div>
+            <div id="login-alert"></div>
+            <div id="login-form">
+                <form onsubmit="handleLogin(event)">
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="login-email" placeholder="tu@email.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Contraseña</label>
+                        <input type="password" id="login-password" placeholder="••••••••" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
+                    </button>
+                </form>
+                <p class="toggle-text">
+                    ¿No tienes cuenta? <a onclick="showRegister()">Regístrate aquí</a>
+                </p>
+            </div>
+            <div id="register-form" style="display: none;">
+                <form onsubmit="handleRegister(event)">
+                    <div class="form-group">
+                        <label>Nombre Completo</label>
+                        <input type="text" id="register-nombre" placeholder="Juan Pérez" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="register-email" placeholder="tu@email.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Contraseña</label>
+                        <input type="password" id="register-password" placeholder="Mínimo 6 caracteres" required minlength="6">
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-user-plus"></i> Crear Cuenta
+                    </button>
+                </form>
+                <p class="toggle-text">
+                    ¿Ya tienes cuenta? <a onclick="showLogin()">Inicia sesión</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dashboard Cliente -->
+    <div class="dashboard" id="dashboard-view">
+        <header class="header">
+            <div class="header-logo">
+                <i class="fas fa-paper-plane"></i>
+                <span>AeroVuela</span>
+            </div>
+            <div class="header-user">
+                <div class="user-info">
+                    <div class="user-avatar" id="user-avatar">U</div>
+                    <span id="user-name">Usuario</span>
+                </div>
+                <button class="btn-logout" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i> Salir
+                </button>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <div class="nav-tabs">
+                <button class="nav-tab active" onclick="showPage('buscar')">
+                    <i class="fas fa-search"></i> Buscar Vuelos
+                </button>
+                <button class="nav-tab" onclick="showPage('mis-reservas')">
+                    <i class="fas fa-ticket-alt"></i> Mis Reservas
+                </button>
+                <button class="nav-tab" onclick="showPage('perfil')">
+                    <i class="fas fa-user"></i> Mi Perfil
+                </button>
+            </div>
+
+            <!-- Buscar Vuelos -->
+            <div id="page-buscar" class="page active">
+                <div class="search-box">
+                    <h2><i class="fas fa-plane-departure"></i> Encuentra tu próximo destino</h2>
+                    <div class="search-filters">
+                        <input type="text" id="search-origen" placeholder="Ciudad de origen">
+                        <input type="text" id="search-destino" placeholder="Ciudad de destino">
+                        <input type="date" id="search-fecha">
+                        <select id="search-clase">
+                            <option value="">Todas las clases</option>
+                            <option value="economica">Económica</option>
+                            <option value="business">Business</option>
+                            <option value="primera">Primera</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-primary" onclick="buscarVuelos()" style="width: 100%;">
+                        <i class="fas fa-search"></i> Buscar Vuelos
+                    </button>
+                </div>
+
+                <div id="vuelos-resultados">
+                    <div class="empty-state">
+                        <i class="fas fa-plane"></i>
+                        <h3>Busca tu vuelo ideal</h3>
+                        <p>Ingresa los datos acima y encuentra las mejores ofertas</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mis Reservas -->
+            <div id="page-mis-reservas" class="page">
+                <h2 style="margin-bottom: 25px;"><i class="fas fa-ticket-alt"></i> Mis Reservas</h2>
+                <div id="mis-reservas-list"></div>
+            </div>
+
+            <!-- Mi Perfil -->
+            <div id="page-perfil" class="page">
+                <h2 style="margin-bottom: 25px;"><i class="fas fa-user"></i> Mi Perfil</h2>
+                <div style="max-width: 600px;">
+                    <div style="background: rgba(255,255,255,0.05); border-radius: 16px; padding: 30px; border: 1px solid var(--glass-border);">
+                        <div style="text-align: center; margin-bottom: 30px;">
+                            <div style="width: 100px; height: 100px; background: linear-gradient(135deg, var(--primary), var(--accent)); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px; font-size: 2.5rem;">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <h3 id="perfil-nombre">Usuario</h3>
+                            <p style="color: rgba(255,255,255,0.6);" id="perfil-email">email@ejemplo.com</p>
+                            <span class="badge badge-success" id="perfil-rol">Cliente</span>
+                        </div>
+                        
+                        <div id="perfil-alert"></div>
+                        
+                        <form onsubmit="actualizarPerfil(event)">
+                            <div class="form-group">
+                                <label>Nombre Completo</label>
+                                <input type="text" id="perfil-nombre-input" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Correo Electrónico</label>
+                                <input type="email" id="perfil-email-input" disabled style="opacity: 0.6; cursor: not-allowed;">
+                                <small style="color: rgba(255,255,255,0.5);">El correo no se puede modificar</small>
+                            </div>
+                            <div class="form-group">
+                                <label>Nueva Contraseña (dejar en blanco para mantener)</label>
+                                <input type="password" id="perfil-password" placeholder="••••••••">
+                            </div>
+                            <div class="form-group">
+                                <label>Confirmar Contraseña</label>
+                                <input type="password" id="perfil-password-confirm" placeholder="••••••••">
+                            </div>
+                            <button type="submit" class="btn btn-primary" style="width: 100%;">
+                                <i class="fas fa-save"></i> Guardar Cambios
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal Reserva -->
+    <div class="modal-overlay" id="reserva-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Confirmar Reserva</h3>
+                <button class="modal-close" onclick="hideModal('reserva-modal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="resumen-vuelo" style="margin-bottom: 20px; padding: 15px; background: rgba(255,255,255,0.05); border-radius: 12px;"></div>
+                <form onsubmit="crearReserva(event)">
+                    <input type="hidden" id="reserva-vuelo-id">
+                    <input type="hidden" id="reserva-vuelo-capacidad">
+                    <div class="form-group">
+                        <label>DNI del Pasajero</label>
+                        <input type="text" id="reserva-dni" placeholder="Número de documento de identidad" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Cantidad de Pasajeros</label>
+                        <input type="number" id="reserva-pasajeros" value="1" min="1" max="10" required onchange="actualizarAsientos(); actualizarTotal();">
+                    </div>
+                    <div class="form-group">
+                        <label>Clase</label>
+                        <select id="reserva-clase" onchange="actualizarClaseYPrecios()" style="background: linear-gradient(135deg, #4361ee, #3a0ca3) !important; color: #ffffff !important; font-weight: 600; border: 2px solid #4cc9f0 !important;">
+                            <option value="economica">Económica</option>
+                            <option value="business">Business</option>
+                            <option value="primera">Primera</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Seleccionar Asientos <span id="asientos-seleccionados" style="color: #ffd166;"></span></label>
+                        <button type="button" class="btn btn-primary" onclick="abrirSelectorAsientos()" style="width: 100%; margin-bottom: 10px;">
+                            <i class="fas fa-chair"></i> Seleccionar Asientos
+                        </button>
+                        <div id="asientos-seleccionados-display" style="padding: 10px; background: rgba(0,0,0,0.3); border-radius: 8px; min-height: 40px;">
+                            <span style="color: rgba(255,255,255,0.5); font-size: 0.9rem;">No hay asientos seleccionados</span>
+                        </div>
+                        <input type="hidden" id="reserva-asientos">
+                    </div>
+                    <div class="form-group">
+                        <label>Total Estimado</label>
+                        <div id="reserva-total" style="font-size: 1.5rem; font-weight: 700; color: var(--success);">$0.00</div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" onclick="hideModal('reserva-modal')">Cancelar</button>
+                        <button type="submit" class="btn btn-success">Confirmar Reserva</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Selector de Asientos -->
+    <div class="modal-overlay" id="asientos-modal">
+        <div class="modal" style="max-width: 600px;">
+            <div class="modal-header">
+                <h3><i class="fas fa-chair"></i> Seleccionar Asientos</h3>
+                <button class="modal-close" onclick="hideModal('asientos-modal')">&times;</button>
+            </div>
+            <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
+                <div style="margin-bottom: 15px; padding: 12px; background: linear-gradient(135deg, #1a2744, #0a1628); border-radius: 10px; border: 1px solid #00b4d8;">
+                    <strong style="color: #00b4d8; font-size: 0.9rem;" id="asientos-info"></strong>
+                    <div style="margin-top: 8px; display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+                        <span style="display: flex; align-items: center; gap: 5px; font-size: 0.8rem;"><span style="width: 18px; height: 18px; background: #06d6a0; border-radius: 3px;"></span> Disponible</span>
+                        <span style="display: flex; align-items: center; gap: 5px; font-size: 0.8rem;"><span style="width: 18px; height: 18px; background: #ffd166; border-radius: 3px; box-shadow: 0 0 8px #ffd166;"></span> Seleccionado</span>
+                        <span style="display: flex; align-items: center; gap: 5px; font-size: 0.8rem;"><span style="width: 18px; height: 18px; background: #666; border-radius: 3px; opacity: 0.6;"></span> Ocupado</span>
+                    </div>
+                </div>
+                <div id="selector-asientos-grid" style="padding: 15px; background: rgba(0,0,0,0.4); border-radius: 12px;"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="hideModal('asientos-modal')">Cancelar</button>
+                <button type="button" class="btn btn-success" onclick="confirmarAsientos()">
+                    <i class="fas fa-check"></i> Confirmar <span id="asientos-confirmar-count">0</span> asiento(s)
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        let vuelosDisponibles = [];
+
+        function checkRole() {
+            const userData = localStorage.getItem('user');
+            if (!userData) return false;
+            window.currentUser = JSON.parse(userData);
+            return window.currentUser && window.currentUser.rol === 'cliente';
+        }
+
+        function showLoginView() {
+            document.getElementById('login-view').style.display = 'flex';
+            document.getElementById('dashboard-view').style.display = 'none';
+        }
+
+        function showDashboardView() {
+            document.getElementById('login-view').style.display = 'none';
+            document.getElementById('dashboard-view').style.display = 'block';
+            if (window.currentUser) {
+                document.getElementById('user-name').textContent = window.currentUser.nombre;
+                document.getElementById('user-avatar').textContent = window.currentUser.nombre.charAt(0).toUpperCase();
+            }
+            loadMisReservas();
+            buscarVuelos();
+        }
+
+        async function login(email, password) {
+            const result = await apiRequest('/auth/login', 'POST', { email, password });
+            window.token = result.token;
+            window.currentUser = result.usuario;
+            localStorage.setItem('token', window.token);
+            localStorage.setItem('user', JSON.stringify(window.currentUser));
+            
+            if (window.currentUser.rol === 'cliente') {
+                showDashboardView();
+            } else {
+                window.location.href = 'admin.html';
+            }
+        }
+
+        async function registro(nombre, email, password) {
+            return await apiRequest('/auth/registro', 'POST', { nombre, email, password, rol: 'cliente' });
+        }
+
+        function logout() {
+            window.token = null;
+            window.currentUser = null;
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.href = 'index.html';
+        }
+
+        function showRegister() {
+            document.getElementById('login-form').style.display = 'none';
+            document.getElementById('register-form').style.display = 'block';
+        }
+
+        function showLogin() {
+            document.getElementById('register-form').style.display = 'none';
+            document.getElementById('login-form').style.display = 'block';
+        }
+
+        async function handleLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            const alertDiv = document.getElementById('login-alert');
+            try {
+                await login(email, password);
+            } catch (error) {
+                alertDiv.innerHTML = `<div class="alert alert-error" style="display: block;">${error.message}</div>`;
+            }
+        }
+
+        async function handleRegister(e) {
+            e.preventDefault();
+            const nombre = document.getElementById('register-nombre').value;
+            const email = document.getElementById('register-email').value;
+            const password = document.getElementById('register-password').value;
+            const alertDiv = document.getElementById('login-alert');
+            try {
+                const result = await registro(nombre, email, password);
+                alertDiv.innerHTML = `<div class="alert alert-success" style="display: block;">${result.mensaje}. Ahora puedes iniciar sesión.</div>`;
+                showLogin();
+            } catch (error) {
+                alertDiv.innerHTML = `<div class="alert alert-error" style="display: block;">${error.message}</div>`;
+            }
+        }
+
+        function showPage(page) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+            document.getElementById(`page-${page}`).classList.add('active');
+            if(event && event.target) event.target.closest('.nav-tab')?.classList.add('active');
+            
+            if (page === 'mis-reservas') {
+                loadMisReservas();
+            } else if (page === 'perfil') {
+                cargarPerfil();
+            }
+        }
+
+        function cargarPerfil() {
+            const userData = localStorage.getItem('user');
+            if (userData) {
+                const user = JSON.parse(userData);
+                document.getElementById('perfil-nombre').textContent = user.nombre;
+                document.getElementById('perfil-email').textContent = user.email;
+                document.getElementById('perfil-rol').textContent = user.rol === 'cliente' ? 'Cliente' : user.rol;
+                document.getElementById('perfil-nombre-input').value = user.nombre;
+                document.getElementById('perfil-email-input').value = user.email;
+            }
+        }
+
+        async function actualizarPerfil(e) {
+            e.preventDefault();
+            const alertDiv = document.getElementById('perfil-alert');
+            const nombre = document.getElementById('perfil-nombre-input').value;
+            const password = document.getElementById('perfil-password').value;
+            const passwordConfirm = document.getElementById('perfil-password-confirm').value;
+            
+            if (password && password !== passwordConfirm) {
+                alertDiv.innerHTML = '<div class="alert alert-error" style="display: block;">Las contraseñas no coinciden</div>';
+                return;
+            }
+            
+            try {
+                const userData = localStorage.getItem('user');
+                const user = JSON.parse(userData);
+                
+                const data = { nombre: nombre };
+                if (password) {
+                    data.password = password;
+                }
+                
+                await apiRequest(`/usuarios/${user.id}`, 'PUT', data);
+                
+                const updatedUser = { ...user, nombre: nombre };
+                localStorage.setItem('user', JSON.stringify(updatedUser));
+                
+                document.getElementById('perfil-password').value = '';
+                document.getElementById('perfil-password-confirm').value = '';
+                alertDiv.innerHTML = '<div class="alert alert-success" style="display: block;">Perfil actualizado correctamente</div>';
+            } catch (error) {
+                alertDiv.innerHTML = `<div class="alert alert-error" style="display: block;">${error.message}</div>`;
+            }
+        }
+
+        async function buscarVuelos() {
+            const container = document.getElementById('vuelos-resultados');
+            container.innerHTML = '<div class="loading"><i class="fas fa-spinner"></i></div>';
+            
+            try {
+                const result = await apiRequest('/vuelos');
+                let vuelos = result.data || [];
+                
+                const origen = document.getElementById('search-origen').value.toLowerCase();
+                const destino = document.getElementById('search-destino').value.toLowerCase();
+                const fecha = document.getElementById('search-fecha').value;
+                
+                if (origen || destino || fecha) {
+                    if (origen) {
+                        vuelos = vuelos.filter(v => (v.ruta?.origen || v.origen || '').toLowerCase().includes(origen));
+                    }
+                    if (destino) {
+                        vuelos = vuelos.filter(v => (v.destino || '').toLowerCase().includes(destino));
+                    }
+                    if (fecha) {
+                        vuelos = vuelos.filter(v => v.fecha_salida && v.fecha_salida.startsWith(fecha));
+                    }
+                }
+                
+                vuelosDisponibles = vuelos.filter(v => v.estado === 'programado');
+                
+                if (vuelosDisponibles.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-search"></i>
+                            <h3>No se encontraron vuelos</h3>
+                            <p>Intenta con otros criterios de búsqueda</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                container.innerHTML = `
+                    <h3 style="margin-bottom: 20px;">${vuelosDisponibles.length} vuelos disponibles</h3>
+                    ${vuelosDisponibles.map(v => `
+                        <div class="flight-card">
+                            <div class="flight-info">
+                                <h3>${v.numero_vuelo || 'Vuelo'}</h3>
+                                <div class="airline">
+                                    <i class="fas fa-building"></i>
+                                    ${v.aerolinea?.nombre || 'Aerolínea'}
+                                </div>
+                            </div>
+                            <div class="flight-route">
+                                <div class="flight-time">
+                                    <div class="time">${v.fecha_salida ? new Date(v.fecha_salida).toLocaleTimeString('es-ES', {hour:'2-digit', minute:'2-digit'}) : '--:--'}</div>
+                                    <div class="city">${v.ruta?.codigo_origen || 'ORI'}</div>
+                                </div>
+                                <div class="flight-arrow">
+                                    <i class="fas fa-arrow-right"></i>
+                                </div>
+                                <div class="flight-time">
+                                    <div class="time">${v.fecha_llegada ? new Date(v.fecha_llegada).toLocaleTimeString('es-ES', {hour:'2-digit', minute:'2-digit'}) : '--:--'}</div>
+                                    <div class="city">${v.ruta?.codigo_destino || 'DEST'}</div>
+                                </div>
+                            </div>
+                            <div class="flight-price">
+                                <div style="display: flex; flex-direction: column; gap: 5px;">
+                                    <div style="background: #06d6a0; padding: 3px 8px; border-radius: 4px; font-size: 0.85rem;"><strong>Económica:</strong> $${Number(v.precios?.economica || v.precio_base || 0).toFixed(2)}</div>
+                                    <div style="background: #ffd166; color: #000; padding: 3px 8px; border-radius: 4px; font-size: 0.85rem;"><strong>Business:</strong> $${Number(v.precios?.business || (v.precio_base * 2) || 0).toFixed(2)}</div>
+                                    <div style="background: #f72585; padding: 3px 8px; border-radius: 4px; font-size: 0.85rem;"><strong>Primera:</strong> $${Number(v.precios?.primera || (v.precio_base * 3) || 0).toFixed(2)}</div>
+                                </div>
+                                <button class="btn btn-success" onclick="abrirReserva(${v.id})" style="margin-top: 10px;">
+                                    <i class="fas fa-shopping-cart"></i> Reservar
+                                </button>
+                            </div>
+                            <div class="flight-details-grid">
+                                <div class="flight-detail"><i class="fas fa-map-marker-alt"></i> ${v.destino}</div>
+                                <div class="flight-detail"><i class="fas fa-clock"></i> ${v.fecha_salida ? new Date(v.fecha_salida).toLocaleDateString() : 'Sin fecha'}</div>
+                            </div>
+                        </div>
+                    `).join('')}
+                `;
+            } catch (error) {
+                container.innerHTML = `<div class="alert alert-error" style="display: block;">Error: ${error.message}</div>`;
+            }
+        }
+
+        let asientosSeleccionados = [];
+        
+        function abrirReserva(vueloId) {
+            const vuelo = vuelosDisponibles.find(v => v.id === vueloId);
+            if (!vuelo) return;
+            
+            asientosSeleccionados = [];
+            document.getElementById('reserva-vuelo-id').value = vueloId;
+            document.getElementById('reserva-vuelo-capacidad').value = vuelo.capacidad || 30;
+            document.getElementById('resumen-vuelo').innerHTML = `
+                <h4 style="margin-bottom: 10px;">${vuelo.numero_vuelo}</h4>
+                <p><strong>Aerolínea:</strong> ${vuelo.aerolinea?.nombre || '-'}</p>
+                <p><strong>Ruta:</strong> ${vuelo.origen || 'Origen'} → ${vuelo.destino || 'Destino'}</p>
+                <p><strong>Fecha:</strong> ${vuelo.fecha_salida ? new Date(vuelo.fecha_salida).toLocaleString() : '-'}</p>
+            `;
+            actualizarDisplayAsientos();
+            actualizarTotal();
+            showModal('reserva-modal');
+        }
+
+        async function cargarAsientosDisponibles(vueloId, capacidad) {
+            try {
+                const [pasajerosRes, reservasRes] = await Promise.all([
+                    apiRequest('/pasajeros'),
+                    apiRequest('/reservas')
+                ]);
+                
+                const asientosOcupados = new Set();
+                const pasajeros = pasajerosRes.data || [];
+                
+                pasajeros.forEach(p => {
+                    if (p.asiento && p.vuelo_id === vueloId) {
+                        asientosOcupados.add(p.asiento.toUpperCase());
+                    }
+                });
+                
+                const container = document.getElementById('asientos-grid');
+                const letras = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+                const clase = document.getElementById('reserva-clase').value || 'economica';
+                
+                const seatsPorClase = {
+                    primera: { inicio: 1, fin: Math.min(6, capacidad), color: '#f72585', nombre: 'Primera Clase' },
+                    business: { inicio: 7, fin: Math.min(18, capacidad), color: '#ffd166', nombre: 'Business' },
+                    economica: { inicio: 19, fin: capacidad, color: '#06d6a0', nombre: 'Económica' }
+                };
+                
+                const rango = seatsPorClase[clase] || seatsPorClase.economica;
+                
+                if (rango.fin < rango.inicio) {
+                    container.innerHTML = `<div style="text-align: center; padding: 20px; color: #fff;"><i class="fas fa-info-circle"></i> No hay asientos disponibles en ${rango.nombre}</div>`;
+                    return;
+                }
+                
+                const maxFilas = Math.ceil(capacidad / 6);
+                let html = '';
+                
+                html += `<div style="margin-bottom: 15px; padding: 10px; background: rgba(0,0,0,0.3); border-radius: 8px; text-align: center;">
+                    <span style="color: ${rango.color}; font-weight: bold;">${rango.nombre}</span>
+                    <span style="color: rgba(255,255,255,0.5); font-size: 0.85rem;"> | Asientos ${rango.inicio} - ${rango.fin}</span>
+                </div>`;
+                
+                for (let f = 0; f < maxFilas; f++) {
+                    html += `<div style="display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 6px;">`;
+                    
+                    for (let c = 1; c <= 6; c++) {
+                        const num = (f * 6) + c;
+                        
+                        if (num < rango.inicio || num > rango.fin) {
+                            html += `<div style="width: 40px; height: 40px; background: transparent; border: 1px dashed rgba(255,255,255,0.1);"></div>`;
+                            continue;
+                        }
+                        
+                        const letra = letras[f] || 'A';
+                        const asiento = `${letra}${c}`;
+                        const ocupado = asientosOcupados.has(asiento);
+                        const seleccionado = asientosSeleccionados.includes(asiento);
+                        
+                        if (ocupado) {
+                            html += `<div style="width: 40px; height: 40px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.75rem; cursor: not-allowed; background: #666; color: #fff; opacity: 0.6; border: 1px solid #888;">
+                                ${asiento}
+                            </div>`;
+                        } else {
+                            html += `<div onclick="toggleAsiento('${asiento}')" style="width: 40px; height: 40px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.75rem; cursor: pointer; ${seleccionado ? 'background: #ffd166; color: #000; box-shadow: 0 0 10px #ffd166; border: 2px solid #fff;' : 'background: ' + rango.color + '; color: #000; border: 1px solid ' + rango.color + ';'}">${asiento}</div>`;
+                        }
+                        
+                        if (c === 3 && num + 1 <= rango.fin) {
+                            html += `<div style="width: 25px;"></div>`;
+                        }
+                    }
+                    
+                    html += `</div>`;
+                }
+                
+                container.innerHTML = html;
+            } catch (error) {
+                console.error('Error cargando asientos:', error);
+            }
+        }
+
+        function toggleAsiento(asiento) {
+            const index = asientosSeleccionados.indexOf(asiento);
+            if (index > -1) {
+                asientosSeleccionados.splice(index, 1);
+            } else {
+                const max = parseInt(document.getElementById('reserva-pasajeros').value) || 1;
+                if (asientosSeleccionados.length < max) {
+                    asientosSeleccionados.push(asiento);
+                } else {
+                    alert('Solo puedes seleccionar ' + max + ' asiento(s)');
+                    return;
+                }
+            }
+            actualizarGridAsientos();
+        }
+
+        function actualizarGridAsientos() {
+            const capacidad = parseInt(document.getElementById('reserva-vuelo-capacidad').value) || 30;
+            cargarAsientosDisponiblesSinAPI(capacidad);
+            document.getElementById('reserva-asientos').value = asientosSeleccionados.join(', ');
+            document.getElementById('asientos-seleccionados').textContent = `(${asientosSeleccionados.length} seleccionados)`;
+        }
+
+        function cargarAsientosDisponiblesSinAPI(capacidad) {
+            const container = document.getElementById('asientos-grid');
+            const letras = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            const clase = document.getElementById('reserva-clase').value || 'economica';
+            
+            const seatsPorClase = {
+                primera: { inicio: 1, fin: Math.min(6, capacidad), color: '#f72585', nombre: 'Primera Clase' },
+                business: { inicio: 7, fin: Math.min(18, capacidad), color: '#ffd166', nombre: 'Business' },
+                economica: { inicio: 19, fin: capacidad, color: '#06d6a0', nombre: 'Económica' }
+            };
+            
+            const rango = seatsPorClase[clase] || seatsPorClase.economica;
+            const asientosEnRango = rango.fin - rango.inicio + 1;
+            
+            if (asientosEnRango <= 0) {
+                container.innerHTML = `<div style="text-align: center; padding: 20px; color: #fff;"><i class="fas fa-info-circle"></i> No hay asientos disponibles en ${rango.nombre}</div>`;
+                return;
+            }
+            
+            const filas = Math.ceil(asientosEnRango / 6);
+            const maxFilas = Math.ceil(capacidad / 6);
+            
+            let html = '';
+            
+            html += `<div style="margin-bottom: 15px; padding: 10px; background: rgba(0,0,0,0.3); border-radius: 8px; text-align: center;">
+                <span style="color: ${rango.color}; font-weight: bold;">${rango.nombre}</span>
+                <span style="color: rgba(255,255,255,0.5); font-size: 0.85rem;"> | Asientos ${rango.inicio} - ${rango.fin}</span>
+            </div>`;
+            
+            for (let f = 0; f < maxFilas; f++) {
+                html += `<div style="display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 6px;">`;
+                
+                for (let c = 1; c <= 6; c++) {
+                    const num = (f * 6) + c;
+                    
+                    if (num < rango.inicio || num > rango.fin) {
+                        html += `<div style="width: 40px; height: 40px; background: transparent; border: 1px dashed rgba(255,255,255,0.1);"></div>`;
+                        continue;
+                    }
+                    
+                    const letra = letras[f] || 'A';
+                    const asiento = `${letra}${c}`;
+                    const seleccionado = asientosSeleccionados.includes(asiento);
+                    html += `<div onclick="toggleAsiento('${asiento}')" style="width: 40px; height: 40px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.75rem; cursor: pointer; ${seleccionado ? 'background: #ffd166; color: #000; box-shadow: 0 0 10px #ffd166; border: 2px solid #fff;' : 'background: ' + rango.color + '; color: #000; border: 1px solid ' + rango.color + ';'}">${asiento}</div>`;
+                    
+                    if (c === 3 && num + 1 <= rango.fin && (num + 1 <= 3 || Math.ceil((num + 1) / 6) === Math.ceil(num / 6))) {
+                        html += `<div style="width: 25px;"></div>`;
+                    }
+                }
+                
+                html += `</div>`;
+            }
+            
+            container.innerHTML = html;
+        }
+
+        function actualizarTotal() {
+            const vueloId = parseInt(document.getElementById('reserva-vuelo-id').value);
+            const cantidad = parseInt(document.getElementById('reserva-pasajeros').value) || 1;
+            const vuelo = vuelosDisponibles.find(v => v.id === vueloId);
+            
+            if (vuelo) {
+                const clase = document.getElementById('reserva-clase').value;
+                const precios = vuelo.precios || {};
+                let precio = 0;
+                
+                if (clase === 'economica') precio = precios.economica || vuelo.precio_base || 0;
+                else if (clase === 'business') precio = precios.business || (vuelo.precio_base * 2) || 0;
+                else if (clase === 'primera') precio = precios.primera || (vuelo.precio_base * 3) || 0;
+                
+                const total = precio * cantidad;
+                document.getElementById('resumen-vuelo').innerHTML = `
+                    <h4 style="margin-bottom: 10px;">${vuelo.numero_vuelo}</h4>
+                    <p><strong>Aerolínea:</strong> ${vuelo.aerolinea?.nombre || '-'}</p>
+                    <p><strong>Ruta:</strong> ${vuelo.origen || 'Origen'} → ${vuelo.destino || 'Destino'}</p>
+                    <p><strong>Clase:</strong> <span style="color: #ffd166;">${clase.charAt(0).toUpperCase() + clase.slice(1)}</span></p>
+                    <p><strong>Precio por Pax:</strong> $${Number(precio).toFixed(2)}</p>
+                    <p><strong>Fecha:</strong> ${vuelo.fecha_salida ? new Date(vuelo.fecha_salida).toLocaleString() : '-'}</p>
+                `;
+                document.getElementById('reserva-total').textContent = '$' + Number(total).toFixed(2);
+            }
+        }
+
+        function actualizarClaseYPrecios() {
+            actualizarTotal();
+            asientosSeleccionados = [];
+            actualizarDisplayAsientos();
+        }
+
+        async function abrirSelectorAsientos() {
+            const vueloId = parseInt(document.getElementById('reserva-vuelo-id').value);
+            const capacidad = parseInt(document.getElementById('reserva-vuelo-capacidad').value) || 30;
+            const cantidad = parseInt(document.getElementById('reserva-pasajeros').value) || 1;
+            const clase = document.getElementById('reserva-clase').value;
+            
+            document.getElementById('asientos-info').textContent = `Vuelo seleccionado | ${cantidad} asiento(s) a seleccionar | Clase: ${clase.charAt(0).toUpperCase() + clase.slice(1)}`;
+            document.getElementById('asientos-confirmar-count').textContent = cantidad;
+            
+            try {
+                const pasajerosRes = await apiRequest('/pasajeros');
+                const asientosOcupados = new Set();
+                const pasajeros = pasajerosRes.data || [];
+                
+                pasajeros.forEach(p => {
+                    if (p.asiento && p.vuelo_id === vueloId) {
+                        asientosOcupados.add(p.asiento.toUpperCase().trim());
+                    }
+                });
+                
+                const container = document.getElementById('selector-asientos-grid');
+                const letras = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+                
+                const seatsPorClase = {
+                    primera: { inicio: 1, fin: Math.min(6, capacidad), color: '#f72585', nombre: 'Primera Clase' },
+                    business: { inicio: 7, fin: Math.min(18, capacidad), color: '#ffd166', nombre: 'Business' },
+                    economica: { inicio: 19, fin: capacidad, color: '#06d6a0', nombre: 'Económica' }
+                };
+                
+                const rango = seatsPorClase[clase] || seatsPorClase.economica;
+                
+                if (rango.fin < rango.inicio) {
+                    container.innerHTML = `<div style="text-align: center; padding: 30px; color: #fff;"><i class="fas fa-info-circle"></i> No hay asientos disponibles en ${rango.nombre}</div>`;
+                    showModal('asientos-modal');
+                    return;
+                }
+                
+                const maxFilas = Math.ceil(capacidad / 6);
+                let html = '';
+                
+                html += `<div style="margin-bottom: 15px; padding: 10px; background: rgba(0,0,0,0.3); border-radius: 8px; text-align: center;">
+                    <span style="color: ${rango.color}; font-weight: bold;">${rango.nombre}</span>
+                    <span style="color: rgba(255,255,255,0.5); font-size: 0.85rem;"> | Asientos ${rango.inicio} - ${rango.fin}</span>
+                </div>`;
+                
+                for (let f = 0; f < maxFilas; f++) {
+                    html += `<div style="display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 6px;">`;
+                    
+                    for (let c = 1; c <= 6; c++) {
+                        const num = (f * 6) + c;
+                        
+                        if (num < rango.inicio || num > rango.fin) {
+                            html += `<div style="width: 40px; height: 40px; background: transparent; border: 1px dashed rgba(255,255,255,0.1);"></div>`;
+                            continue;
+                        }
+                        
+                        const letra = letras[f] || 'A';
+                        const asiento = `${letra}${c}`;
+                        const ocupado = asientosOcupados.has(asiento);
+                        const seleccionado = asientosSeleccionados.includes(asiento);
+                        
+                        if (ocupado) {
+                            html += `<div style="width: 40px; height: 40px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.75rem; cursor: not-allowed; background: #666; color: #fff; opacity: 0.6; border: 1px solid #888;">
+                                ${asiento}
+                            </div>`;
+                        } else {
+                            const maxSelect = cantidad;
+                            const canSelect = asientosSeleccionados.length < maxSelect || seleccionado;
+                            html += `<div onclick="${canSelect ? `toggleAsientoModal('${asiento}')` : ''}" style="width: 40px; height: 40px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.75rem; cursor: ${canSelect ? 'pointer' : 'not-allowed'}; ${seleccionado ? 'background: #ffd166; color: #000; box-shadow: 0 0 10px #ffd166; border: 2px solid #fff;' : 'background: ' + rango.color + '; color: #000; border: 1px solid ' + rango.color + ';' + (asientosSeleccionados.length >= maxSelect && !seleccionado ? '; opacity: 0.5;' : '')}">${asiento}</div>`;
+                        }
+                        
+                        if (c === 3 && num + 1 <= rango.fin) {
+                            html += `<div style="width: 25px;"></div>`;
+                        }
+                    }
+                    
+                    html += `</div>`;
+                }
+                
+                container.innerHTML = html;
+                showModal('asientos-modal');
+            } catch (error) {
+                alert('Error al cargar asientos: ' + error.message);
+            }
+        }
+
+        function toggleAsientoModal(asiento) {
+            const cantidad = parseInt(document.getElementById('reserva-pasajeros').value) || 1;
+            const index = asientosSeleccionados.indexOf(asiento);
+            
+            if (index > -1) {
+                asientosSeleccionados.splice(index, 1);
+            } else {
+                if (asientosSeleccionados.length < cantidad) {
+                    asientosSeleccionados.push(asiento);
+                } else {
+                    alert(`Solo puedes seleccionar ${cantidad} asiento(s)`);
+                    return;
+                }
+            }
+            
+            actualizarContadorModal();
+            abrirSelectorAsientos();
+        }
+
+        function actualizarContadorModal() {
+            const cantidad = parseInt(document.getElementById('reserva-pasajeros').value) || 1;
+            document.getElementById('asientos-confirmar-count').textContent = asientosSeleccionados.length;
+            
+            const btn = document.querySelector('#asientos-modal .btn-success');
+            if (asientosSeleccionados.length === cantidad) {
+                btn.style.opacity = '1';
+                btn.style.pointerEvents = 'auto';
+            } else {
+                btn.style.opacity = '0.6';
+            }
+        }
+
+        function confirmarAsientos() {
+            const cantidad = parseInt(document.getElementById('reserva-pasajeros').value) || 1;
+            
+            if (asientosSeleccionados.length !== cantidad) {
+                alert(`Debes seleccionar exactamente ${cantidad} asiento(s)`);
+                return;
+            }
+            
+            actualizarDisplayAsientos();
+            hideModal('asientos-modal');
+        }
+
+        function actualizarDisplayAsientos() {
+            const container = document.getElementById('asientos-seleccionados-display');
+            const cantidad = parseInt(document.getElementById('reserva-pasajeros').value) || 1;
+            document.getElementById('asientos-seleccionados').textContent = `(${asientosSeleccionados.length}/${cantidad})`;
+            document.getElementById('reserva-asientos').value = asientosSeleccionados.join(', ');
+            
+            if (asientosSeleccionados.length === 0) {
+                container.innerHTML = '<span style="color: rgba(255,255,255,0.5); font-size: 0.9rem;">No hay asientos seleccionados</span>';
+            } else {
+                container.innerHTML = '<div style="display: flex; flex-wrap: wrap; gap: 8px;">' + 
+                    asientosSeleccionados.map(a => `<span style="background: #ffd166; color: #000; padding: 5px 12px; border-radius: 20px; font-weight: bold; font-size: 0.9rem;">${a}</span>`).join('') + 
+                    '</div>';
+            }
+            
+            actualizarTotal();
+        }
+
+        async function crearReserva(e) {
+            e.preventDefault();
+            const vueloId = document.getElementById('reserva-vuelo-id').value;
+            const dni = document.getElementById('reserva-dni').value;
+            const cantidad = document.getElementById('reserva-pasajeros').value;
+            const clase = document.getElementById('reserva-clase').value;
+            const asientos = document.getElementById('reserva-asientos').value;
+            
+            try {
+                await apiRequest('/reservas', 'POST', {
+                    usuario_id: window.currentUser.id,
+                    dni: dni,
+                    vuelo_id: parseInt(vueloId),
+                    cantidad_pasajeros: parseInt(cantidad),
+                    clase: clase,
+                    asientos: asientos || null
+                });
+                
+                hideModal('reserva-modal');
+                alert('¡Reserva creada exitosamente!');
+                showPage('mis-reservas');
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        }
+
+        function actualizarAsientos() {
+            const cantidad = parseInt(document.getElementById('reserva-pasajeros').value) || 1;
+            asientosSeleccionados = [];
+            actualizarDisplayAsientos();
+        }
+
+        async function loadMisReservas() {
+            const container = document.getElementById('mis-reservas-list');
+            container.innerHTML = '<div class="loading"><i class="fas fa-spinner"></i></div>';
+            
+            try {
+                const result = await apiRequest('/reservas');
+                const reservas = result.data || [];
+                const misReservas = reservas.filter(r => r.usuario_id === window.currentUser?.id);
+                
+                if (misReservas.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-ticket-alt"></i>
+                            <h3>No tienes reservas</h3>
+                            <p>¡Reserva tu primer vuelo ahora!</p>
+                            <button class="btn btn-primary" onclick="showPage('buscar')" style="margin-top: 20px;">
+                                Buscar Vuelos
+                            </button>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                container.innerHTML = `
+                    <div class="reservas-grid">
+                        ${misReservas.map(r => `
+                            <div class="reserva-card">
+                                <div class="reserva-header">
+                                    <span class="reserva-codigo">${r.codigo_reserva}</span>
+                                    ${getEstadoBadge(r.estado)}
+                                </div>
+                                <div class="reserva-details">
+                                    <div class="reserva-detail">
+                                        <i class="fas fa-plane"></i>
+                                        <span>Vuelo: ${r.vuelo?.numero_vuelo || '-'}</span>
+                                    </div>
+                                    <div class="reserva-detail">
+                                        <i class="fas fa-map-marker-alt"></i>
+                                        <span>Destino: ${r.vuelo?.destino || '-'}</span>
+                                    </div>
+                                    <div class="reserva-detail">
+                                        <i class="fas fa-users"></i>
+                                        <span>Pasajeros: ${r.cantidad_pasajeros}</span>
+                                    </div>
+                                    <div class="reserva-detail">
+                                        <i class="fas fa-calendar"></i>
+                                        <span>Fecha: ${r.vuelo?.fecha_salida ? new Date(r.vuelo.fecha_salida).toLocaleDateString() : '-'}</span>
+                                    </div>
+                                </div>
+                                <div class="reserva-footer">
+                                    <span class="reserva-total">$${Number(r.total || 0).toFixed(2)}</span>
+                                    ${r.estado === 'confirmada' ? `<button class="btn btn-danger" onclick="cancelarReserva(${r.id})">Cancelar</button>` : ''}
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            } catch (error) {
+                container.innerHTML = `<div class="alert alert-error" style="display: block;">Error: ${error.message}</div>`;
+            }
+        }
+
+        async function cancelarReserva(id) {
+            if (!confirm('¿Estás seguro de cancelar esta reserva?')) return;
+            
+            try {
+                await apiRequest(`/reservas/${id}`, 'DELETE');
+                loadMisReservas();
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        }
+
+        function getEstadoBadge(estado) {
+            const map = {
+                'confirmada': 'badge-success',
+                'pendiente': 'badge-warning',
+                'cancelada': 'badge-danger',
+                'completada': 'badge-info'
+            };
+            return `<span class="badge ${map[estado] || 'badge-info'}">${estado}</span>`;
+        }
+
+        function showModal(id) { document.getElementById(id).classList.add('active'); }
+        function hideModal(id) { document.getElementById(id).classList.remove('active'); }
+
+        document.querySelectorAll('.modal-overlay').forEach(modal => {
+            modal.addEventListener('click', function(e) { if(e.target === this) this.classList.remove('active'); });
+        });
+
+        if (!checkRole()) {
+            window.location.href = 'index.html';
+        } else {
+            showDashboardView();
+        }
+    </script>
+</body>
+</html>

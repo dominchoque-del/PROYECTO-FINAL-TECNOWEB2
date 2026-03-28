@@ -1,0 +1,2812 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AeroControl - Panel de Administración</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #1e3a5f;
+            --primary-dark: #0d1b2a;
+            --secondary: #00b4d8;
+            --accent: #f72585;
+            --success: #06d6a0;
+            --warning: #ffd166;
+            --danger: #ef476f;
+            --dark: #1a1a2e;
+            --light: #f8f9fa;
+            --glass: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f0c29 0%, #1a1a2e 50%, #16213e 100%);
+            min-height: 100vh;
+            color: #fff;
+        }
+
+        .login-wrapper {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background: 
+                radial-gradient(ellipse at top, rgba(0, 180, 216, 0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at bottom right, rgba(247, 37, 133, 0.1) 0%, transparent 50%),
+                linear-gradient(135deg, #0f0c29 0%, #1a1a2e 50%, #16213e 100%);
+        }
+
+        .login-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            width: 100%;
+            max-width: 420px;
+            padding: 40px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4);
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .login-logo {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--secondary) 0%, var(--accent) 100%);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 2.5rem;
+            box-shadow: 0 10px 30px rgba(0, 180, 216, 0.3);
+        }
+
+        .login-header h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, #fff 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .login-header p {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.95rem;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 14px 16px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            font-size: 1rem;
+            color: #fff;
+            transition: all 0.3s;
+        }
+
+        .form-group select option {
+            background: #1a1a2e;
+            color: #fff;
+        }
+
+        .form-group input::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: var(--secondary);
+            background: rgba(0, 180, 216, 0.1);
+            box-shadow: 0 0 0 4px rgba(0, 180, 216, 0.15);
+        }
+
+        .btn {
+            padding: 14px 28px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--secondary) 0%, #0096b4 100%);
+            color: white;
+            width: 100%;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 180, 216, 0.4);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, var(--accent) 0%, #d61f69 100%);
+            color: white;
+        }
+
+        .toggle-text {
+            text-align: center;
+            margin-top: 25px;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .toggle-text a {
+            color: var(--secondary);
+            text-decoration: none;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .toggle-text a:hover {
+            text-decoration: underline;
+        }
+
+        .alert {
+            padding: 14px 18px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            display: none;
+            font-size: 0.9rem;
+        }
+
+        .alert-success {
+            background: rgba(6, 214, 160, 0.15);
+            color: var(--success);
+            border: 1px solid rgba(6, 214, 160, 0.3);
+        }
+
+        .alert-error {
+            background: rgba(239, 71, 111, 0.15);
+            color: var(--danger);
+            border: 1px solid rgba(239, 71, 111, 0.3);
+        }
+
+        /* Dashboard Styles */
+        .dashboard {
+            display: none;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 280px;
+            height: 100vh;
+            background: linear-gradient(180deg, #0d1b2a 0%, #1a1a2e 100%);
+            padding: 25px 15px;
+            padding-bottom: 100px;
+            z-index: 100;
+            border-right: 1px solid var(--glass-border);
+            overflow-y: auto;
+        }
+
+        .sidebar-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0 10px 25px;
+            border-bottom: 1px solid var(--glass-border);
+            margin-bottom: 25px;
+        }
+
+        .sidebar-logo-icon {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, var(--secondary) 0%, var(--accent) 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+        }
+
+        .sidebar-logo span {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: white;
+        }
+
+        .sidebar-logo span b {
+            color: var(--secondary);
+        }
+
+        .sidebar-menu {
+            list-style: none;
+        }
+
+        .sidebar-menu li {
+            margin-bottom: 5px;
+        }
+
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            padding: 14px 16px;
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            border-radius: 12px;
+            transition: all 0.3s;
+            font-weight: 500;
+            gap: 12px;
+        }
+
+        .sidebar-menu a:hover,
+        .sidebar-menu a.active {
+            background: linear-gradient(135deg, rgba(0, 180, 216, 0.4) 0%, rgba(247, 37, 133, 0.3) 100%);
+            color: #fff !important;
+            transform: translateX(5px);
+            border-left: 3px solid #00b4d8;
+        }
+
+        .sidebar-menu a i {
+            width: 22px;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+
+        .user-panel {
+            margin: 15px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            border: 1px solid var(--glass-border);
+        }
+
+        .user-panel-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .user-avatar {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, var(--accent) 0%, #d61f69 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        .user-details h4 {
+            font-size: 0.95rem;
+            margin-bottom: 3px;
+        }
+
+        .user-details span {
+            font-size: 0.8rem;
+            color: var(--secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-logout {
+            width: 100%;
+            padding: 12px;
+            background: rgba(239, 71, 111, 0.2);
+            border: 1px solid rgba(239, 71, 111, 0.3);
+            color: var(--danger);
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-logout:hover {
+            background: var(--danger);
+            color: white;
+        }
+
+        .main-content {
+            margin-left: 280px;
+            padding: 30px;
+            min-height: 100vh;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .page-title {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .live-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 18px;
+            background: linear-gradient(135deg, rgba(6, 214, 160, 0.2), rgba(6, 214, 160, 0.1));
+            border: 1px solid rgba(6, 214, 160, 0.5);
+            border-radius: 25px;
+            color: #06d6a0;
+            font-weight: 700;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .live-badge::before, #live-dot {
+            content: '';
+            width: 10px;
+            height: 10px;
+            background: #06d6a0;
+            border-radius: 50%;
+            animation: pulse 1s ease-in-out infinite;
+            box-shadow: 0 0 10px #06d6a0;
+        }
+
+        #live-dot {
+            display: inline-block;
+            margin-left: 5px;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.3); }
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 25px;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--secondary), var(--accent));
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            border-color: var(--secondary);
+        }
+
+        .stat-icon {
+            width: 55px;
+            height: 55px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 18px;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-card.blue .stat-icon { background: linear-gradient(135deg, rgba(0, 180, 216, 0.2), rgba(0, 150, 180, 0.3)); color: var(--secondary); }
+        .stat-card.green .stat-icon { background: linear-gradient(135deg, rgba(6, 214, 160, 0.2), rgba(5, 181, 136, 0.3)); color: var(--success); }
+        .stat-card.pink .stat-icon { background: linear-gradient(135deg, rgba(247, 37, 133, 0.2), rgba(214, 31, 105, 0.3)); color: var(--accent); }
+        .stat-card.orange .stat-icon { background: linear-gradient(135deg, rgba(255, 209, 102, 0.2), rgba(245, 184, 0, 0.3)); color: var(--warning); }
+
+        .content-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+
+        .content-card h3 {
+            color: white;
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table thead {
+            background: linear-gradient(135deg, #1e3a5f 0%, #0d1b2a 100%);
+        }
+
+        table th {
+            background: transparent;
+            padding: 12px 15px;
+            text-align: left;
+            font-weight: 600;
+            color: #00b4d8;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 2px solid rgba(0, 180, 216, 0.3);
+            white-space: nowrap;
+        }
+
+        table tbody tr {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.2s ease;
+        }
+
+        table tbody tr:hover {
+            background: linear-gradient(90deg, rgba(0, 180, 216, 0.1) 0%, rgba(247, 37, 133, 0.05) 100%);
+        }
+
+        table td {
+            padding: 12px 15px;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 0.9rem;
+            vertical-align: middle;
+        }
+
+        table td:first-child {
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .table-actions {
+            display: flex;
+            gap: 6px;
+            justify-content: flex-start;
+        }
+
+        .table-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            gap: 5px;
+        }
+
+        .table-badge-success { background: rgba(6, 214, 160, 0.15); color: #06d6a0; border: 1px solid rgba(6, 214, 160, 0.3); }
+        .table-badge-warning { background: rgba(255, 209, 102, 0.15); color: #ffd166; border: 1px solid rgba(255, 209, 102, 0.3); }
+        .table-badge-danger { background: rgba(239, 71, 111, 0.15); color: #ef476f; border: 1px solid rgba(239, 71, 111, 0.3); }
+        .table-badge-info { background: rgba(0, 180, 216, 0.15); color: #00b4d8; border: 1px solid rgba(0, 180, 216, 0.3); }
+        .table-badge-primary { background: rgba(30, 58, 95, 0.3); color: #00b4d8; border: 1px solid rgba(0, 180, 216, 0.2); }
+        .table-badge-pink { background: rgba(247, 37, 133, 0.15); color: #f72585; border: 1px solid rgba(247, 37, 133, 0.3); }
+
+        .empty-state {
+            text-align: center;
+            padding: 30px 20px;
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .empty-state i {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            opacity: 0.3;
+            color: #00b4d8;
+        }
+
+        .empty-state h4 {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 1rem;
+            margin-bottom: 5px;
+        }
+
+        .empty-state p {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .badge-success { background: rgba(6, 214, 160, 0.2); color: var(--success); }
+        .badge-warning { background: rgba(255, 209, 102, 0.2); color: var(--warning); }
+        .badge-danger { background: rgba(239, 71, 111, 0.2); color: var(--danger); }
+        .badge-info { background: rgba(0, 180, 216, 0.2); color: var(--secondary); }
+        .badge-primary { background: rgba(30, 58, 95, 0.3); color: var(--secondary); }
+
+        .btn-sm {
+            padding: 8px 14px;
+            font-size: 0.8rem;
+            border-radius: 8px;
+        }
+
+        .btn-danger {
+            background: rgba(239, 71, 111, 0.2);
+            border: 1px solid rgba(239, 71, 111, 0.3);
+            color: var(--danger);
+        }
+
+        .btn-danger:hover {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 8px;
+        }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: #1a1a2e;
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            width: 100%;
+            max-width: 550px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            padding: 22px 25px;
+            border-bottom: 1px solid var(--glass-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            color: white;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: rgba(255, 255, 255, 0.6);
+            transition: color 0.3s;
+        }
+
+        .modal-close:hover {
+            color: var(--danger);
+        }
+
+        .modal-body {
+            padding: 25px;
+        }
+
+        .modal-footer {
+            padding: 20px 25px;
+            border-top: 1px solid var(--glass-border);
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+        }
+
+        .map-container {
+            height: 350px;
+            background: linear-gradient(135deg, #0d1b2a 0%, #16213e 100%);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid var(--glass-border);
+        }
+
+        .map-container::before {
+            content: '';
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background: repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 40px,
+                rgba(255, 255, 255, 0.02) 40px,
+                rgba(255, 255, 255, 0.02) 80px
+            );
+            animation: moveGrid 30s linear infinite;
+        }
+
+        @keyframes moveGrid {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(80px, 80px); }
+        }
+
+        .activity-list {
+            list-style: none;
+        }
+
+        .activity-list li {
+            padding: 16px;
+            border-bottom: 1px solid var(--glass-border);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .activity-list li:last-child {
+            border-bottom: none;
+        }
+
+        .activity-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .loading i {
+            font-size: 2rem;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .page {
+            display: none;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        @media (max-width: 1200px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 80px;
+                padding: 15px 10px;
+            }
+            .sidebar-logo span, .sidebar-menu a span, .user-panel {
+                display: none;
+            }
+            .sidebar-menu a {
+                justify-content: center;
+                padding: 12px;
+            }
+            .main-content {
+                margin-left: 80px;
+                padding: 15px;
+            }
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="login-view" style="display: none;"></div>
+    <div class="dashboard" id="dashboard-view">
+        <aside class="sidebar">
+            <div class="sidebar-logo">
+                <div class="sidebar-logo-icon">
+                    <i class="fas fa-plane-departure"></i>
+                </div>
+                <span>Aero<b>Control</b></span>
+            </div>
+            <div class="user-panel">
+                <div class="user-panel-info">
+                    <div class="user-avatar" id="user-avatar">A</div>
+                    <div class="user-details">
+                        <h4 id="user-name">Usuario</h4>
+                        <span id="user-role">Admin</span>
+                    </div>
+                </div>
+                <button class="btn-logout" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                </button>
+            </div>
+            <ul class="sidebar-menu">
+                <li><a href="#" data-page="dashboard" class="active"><i class="fas fa-th-large"></i><span>Dashboard</span></a></li>
+                <li><a href="#" data-page="usuarios"><i class="fas fa-user-cog"></i><span>Usuarios</span></a></li>
+                <li><a href="#" data-page="vuelos"><i class="fas fa-plane"></i><span>Vuelos</span></a></li>
+                <li><a href="#" data-page="reservas"><i class="fas fa-ticket-alt"></i><span>Reservas</span></a></li>
+                <li><a href="#" data-page="pasajeros"><i class="fas fa-users"></i><span>Pasajeros</span></a></li>
+                <li><a href="#" data-page="naves"><i class="fas fa-plane-slash"></i><span>Aeronaves</span></a></li>
+                <li><a href="#" data-page="rutas"><i class="fas fa-route"></i><span>Rutas</span></a></li>
+                <li><a href="#" data-page="aerolineas"><i class="fas fa-building"></i><span>Aerolíneas</span></a></li>
+                <li><a href="#" data-page="monitoreo"><i class="fas fa-satellite-dish"></i><span>Monitoreo</span></a></li>
+            </ul>
+        </aside>
+
+        <main class="main-content">
+            <div id="page-dashboard" class="page">
+                <div class="page-header">
+                    <h1 class="page-title">Panel de Control</h1>
+                    <div class="header-actions">
+                        <div class="live-badge" style="background: linear-gradient(135deg, #00b4d8, #06d6a0);">
+                            <span style="animation: pulse 1s infinite;">●</span> Sistema Activo
+                        </div>
+                    </div>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-card" style="background: linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%);">
+                        <div class="stat-icon"><i class="fas fa-plane"></i></div>
+                        <div class="stat-value" id="total-vuelos">0</div>
+                        <div class="stat-label">Total Vuelos</div>
+                    </div>
+                    <div class="stat-card" style="background: linear-gradient(135deg, #06d6a0 0%, #00b894 100%);">
+                        <div class="stat-icon"><i class="fas fa-ticket-alt"></i></div>
+                        <div class="stat-value" id="total-reservas">0</div>
+                        <div class="stat-label">Reservas</div>
+                    </div>
+                    <div class="stat-card" style="background: linear-gradient(135deg, #f72585 0%, #b5179e 100%);">
+                        <div class="stat-icon"><i class="fas fa-plane-slash"></i></div>
+                        <div class="stat-value" id="total-naves">0</div>
+                        <div class="stat-label">Aeronaves</div>
+                    </div>
+                    <div class="stat-card" style="background: linear-gradient(135deg, #ffd166 0%, #ef8354 100%);">
+                        <div class="stat-icon"><i class="fas fa-users"></i></div>
+                        <div class="stat-value" id="total-pasajeros">0</div>
+                        <div class="stat-label">Pasajeros</div>
+                    </div>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                    <div class="content-card" style="background: linear-gradient(135deg, #0a1628 0%, #1a2744 100%); border: 1px solid #00b4d8;">
+                        <h3 style="color: #00b4d8; margin-bottom: 15px;"><i class="fas fa-map-marked-alt"></i> Mapa de Rutas Aéreas</h3>
+                        <div style="position: relative; height: 280px; background: linear-gradient(180deg, #0d1b2a 0%, #1b2838 100%); border-radius: 12px; overflow: hidden;">
+                            <svg style="position: absolute; width: 100%; height: 100%; opacity: 0.4;" viewBox="0 0 400 280">
+                                <path d="M 60 140 Q 150 40 200 140 T 340 140" stroke="#00b4d8" fill="none" stroke-width="1.5" stroke-dasharray="5,5"/>
+                                <path d="M 40 80 Q 120 180 200 100 T 380 160" stroke="#f72585" fill="none" stroke-width="1.5" stroke-dasharray="5,5"/>
+                                <path d="M 80 200 Q 180 120 260 180 T 360 120" stroke="#06d6a0" fill="none" stroke-width="1.5" stroke-dasharray="5,5"/>
+                                <circle cx="60" cy="140" r="4" fill="#00b4d8"/><text x="65" y="145" fill="#00b4d8" font-size="9">La Paz</text>
+                                <circle cx="340" cy="140" r="4" fill="#06d6a0"/><text x="290" y="155" fill="#06d6a0" font-size="9">Santa Cruz</text>
+                                <circle cx="200" cy="100" r="4" fill="#ffd166"/><text x="205" y="105" fill="#ffd166" font-size="9">Cochabamba</text>
+                                <circle cx="360" cy="120" r="4" fill="#f72585"/><text x="310" y="125" fill="#f72585" font-size="9">Tarija</text>
+                                <circle cx="80" cy="200" r="4" fill="#ef476f"/><text x="85" y="205" fill="#ef476f" font-size="9">Oruro</text>
+                            </svg>
+                            <div id="dashboard-aviones" style="position: absolute; width: 100%; height: 100%;"></div>
+                        </div>
+                    </div>
+                    <div class="content-card">
+                        <h3 style="color: #ffd166; margin-bottom: 15px;"><i class="fas fa-chart-line"></i> Estadísticas</h3>
+                        <div style="display: grid; gap: 15px;">
+                            <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 10px; border-left: 3px solid #00b4d8;">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span style="color: rgba(255,255,255,0.7);">Vuelos Activos</span>
+                                    <strong style="color: #00b4d8; font-size: 1.3rem;" id="vuelos-activos">0</strong>
+                                </div>
+                            </div>
+                            <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 10px; border-left: 3px solid #06d6a0;">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span style="color: rgba(255,255,255,0.7);">Ingresos Totales</span>
+                                    <strong style="color: #06d6a0; font-size: 1.3rem;" id="ingresos-totales">$0</strong>
+                                </div>
+                            </div>
+                            <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 10px; border-left: 3px solid #f72585;">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span style="color: rgba(255,255,255,0.7);">Aerolíneas</span>
+                                    <strong style="color: #f72585; font-size: 1.3rem;" id="total-aerolineas">0</strong>
+                                </div>
+                            </div>
+                            <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 10px; border-left: 3px solid #ffd166;">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span style="color: rgba(255,255,255,0.7);">Rutas</span>
+                                    <strong style="color: #ffd166; font-size: 1.3rem;" id="total-rutas">0</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="content-card">
+                    <h3><i class="fas fa-history"></i> Actividad Reciente</h3>
+                    <ul class="activity-list" id="recent-activity">
+                        <li class="loading"><i class="fas fa-spinner"></i></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div id="page-usuarios" class="page" style="display: none;">
+                <div class="page-header">
+                    <h1 class="page-title">Gestión de Usuarios</h1>
+                    <button class="btn btn-primary" onclick="showModal('usuario-modal')">
+                        <i class="fas fa-plus"></i> Nuevo Usuario
+                    </button>
+                </div>
+                <div class="content-card">
+                    <div class="table-container" id="usuarios-list"></div>
+                </div>
+            </div>
+
+            <div id="page-vuelos" class="page" style="display: none;">
+                <div class="page-header">
+                    <h1 class="page-title">Gestión de Vuelos</h1>
+                    <button class="btn btn-primary" onclick="showModal('vuelo-modal')">
+                        <i class="fas fa-plus"></i> Nuevo Vuelo
+                    </button>
+                </div>
+                <div class="content-card">
+                    <div class="table-container" id="vuelos-list"></div>
+                </div>
+            </div>
+
+            <div id="page-reservas" class="page" style="display: none;">
+                <div class="page-header">
+                    <h1 class="page-title">Gestión de Reservas</h1>
+                    <button class="btn btn-primary" onclick="showModal('reserva-modal')">
+                        <i class="fas fa-plus"></i> Nueva Reserva
+                    </button>
+                </div>
+                <div class="content-card">
+                    <div class="table-container" id="reservas-list"></div>
+                </div>
+            </div>
+
+            <div id="page-pasajeros" class="page" style="display: none;">
+                <div class="page-header">
+                    <h1 class="page-title">Gestión de Pasajeros</h1>
+                    <button class="btn btn-primary" onclick="pasajeroAsientoSeleccionado = ''; actualizarDisplayAsientoPasajero(); showModal('pasajero-modal')">
+                        <i class="fas fa-plus"></i> Nuevo Pasajero
+                    </button>
+                </div>
+                <div class="content-card">
+                    <div class="table-container" id="pasajeros-list"></div>
+                </div>
+            </div>
+
+            <div id="page-naves" class="page" style="display: none;">
+                <div class="page-header">
+                    <h1 class="page-title">Gestión de Aeronaves</h1>
+                    <button class="btn btn-primary" onclick="showModal('nave-modal')">
+                        <i class="fas fa-plus"></i> Nueva Aeronave
+                    </button>
+                </div>
+                <div class="content-card">
+                    <div class="table-container" id="naves-list"></div>
+                </div>
+            </div>
+
+            <div id="page-rutas" class="page" style="display: none;">
+                <div class="page-header">
+                    <h1 class="page-title">Gestión de Rutas</h1>
+                    <button class="btn btn-primary" onclick="showModal('ruta-modal')">
+                        <i class="fas fa-plus"></i> Nueva Ruta
+                    </button>
+                </div>
+                <div class="content-card">
+                    <div class="table-container" id="rutas-list"></div>
+                </div>
+            </div>
+
+            <div id="page-aerolineas" class="page" style="display: none;">
+                <div class="page-header">
+                    <h1 class="page-title">Gestión de Aerolíneas</h1>
+                    <button class="btn btn-primary" onclick="showModal('aerolinea-modal')">
+                        <i class="fas fa-plus"></i> Nueva Aerolínea
+                    </button>
+                </div>
+                <div class="content-card">
+                    <div class="table-container" id="aerolineas-list"></div>
+                </div>
+            </div>
+
+            <div id="page-monitoreo" class="page" style="display: none;">
+                <div class="page-header">
+                    <h1 class="page-title">Monitoreo en Tiempo Real</h1>
+                    <div class="live-badge">EN VIVO <span id="live-dot"></span></div>
+                </div>
+                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 20px;">
+                    <div class="content-card" style="background: linear-gradient(135deg, #0a1628 0%, #1a2744 100%); border: 1px solid #00b4d8; border-radius: 16px; padding: 20px; min-height: 400px; position: relative; overflow: hidden;">
+                        <h3 style="color: #fff; margin-bottom: 20px;"><i class="fas fa-map-marked-alt"></i> Mapa de Rutas Aéreas</h3>
+                        <div id="mapa-simulado" style="position: relative; height: 320px; background: linear-gradient(180deg, #0d1b2a 0%, #1b2838 100%); border-radius: 12px; overflow: hidden;">
+                            <svg style="position: absolute; width: 100%; height: 100%; opacity: 0.3;" viewBox="0 0 400 300">
+                                <path d="M 50 150 Q 150 50 200 150 T 350 150" stroke="#00b4d8" fill="none" stroke-width="1"/>
+                                <path d="M 30 100 Q 120 200 200 120 T 380 180" stroke="#f72585" fill="none" stroke-width="1"/>
+                                <circle cx="50" cy="150" r="3" fill="#00b4d8"/><text x="55" y="155" fill="#00b4d8" font-size="8">La Paz</text>
+                                <circle cx="350" cy="150" r="3" fill="#06d6a0"/><text x="300" y="155" fill="#06d6a0" font-size="8">Santa Cruz</text>
+                                <circle cx="200" cy="120" r="3" fill="#ffd166"/><text x="205" y="125" fill="#ffd166" font-size="8">Cochabamba</text>
+                            </svg>
+                            <div id="aviones-mapa"></div>
+                        </div>
+                    </div>
+                    <div class="content-card">
+                        <h3 style="color: #fff; margin-bottom: 15px;"><i class="fas fa-satellite-dish"></i> Vuelos Activos</h3>
+                        <div id="monitoreo-list" style="max-height: 380px; overflow-y: auto;"></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modales -->
+    <div class="modal-overlay" id="usuario-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Nuevo Usuario</h3>
+                <button class="modal-close" onclick="hideModal('usuario-modal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form onsubmit="createUsuario(event)">
+                    <div class="form-group">
+                        <label>Nombre Completo</label>
+                        <input type="text" id="usuario-nombre" placeholder="Nombre del usuario" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="usuario-email" placeholder="email@ejemplo.com" required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Contraseña</label>
+                            <input type="password" id="usuario-password" placeholder="••••••••" required minlength="6">
+                        </div>
+                        <div class="form-group">
+                            <label>Rol</label>
+                            <select id="usuario-rol">
+                                <option value="cliente">Cliente</option>
+                                <option value="operador">Operador</option>
+                                <option value="admin">Administrador</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" onclick="hideModal('usuario-modal')">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Crear Usuario</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="usuario-edit-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Editar Usuario</h3>
+                <button class="modal-close" onclick="hideModal('usuario-edit-modal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form onsubmit="updateUsuario(event)">
+                    <input type="hidden" id="usuario-edit-id">
+                    <div class="form-group">
+                        <label>Nombre Completo</label>
+                        <input type="text" id="usuario-edit-nombre" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="usuario-edit-email" disabled style="opacity: 0.6;">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Nuevo Password (opcional)</label>
+                            <input type="password" id="usuario-edit-password" placeholder="Nueva contraseña">
+                        </div>
+                        <div class="form-group">
+                            <label>Rol</label>
+                            <select id="usuario-edit-rol">
+                                <option value="cliente">Cliente</option>
+                                <option value="operador">Operador</option>
+                                <option value="admin">Administrador</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" onclick="hideModal('usuario-edit-modal')">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="vuelo-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Nuevo Vuelo</h3>
+                <button class="modal-close" onclick="hideModal('vuelo-modal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form onsubmit="createVuelo(event)">
+                    <div class="form-group">
+                        <label>Aerolínea</label>
+                        <select id="vuelo-aerolinea" required></select>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Origen</label>
+                            <input type="text" id="vuelo-origen" placeholder="Ciudad de origen">
+                        </div>
+                        <div class="form-group">
+                            <label>Destino</label>
+                            <input type="text" id="vuelo-destino" placeholder="Ciudad de destino" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Número de Vuelo</label>
+                        <input type="text" id="vuelo-numero" placeholder="Opcional">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Fecha Salida</label>
+                            <input type="datetime-local" id="vuelo-fecha-salida">
+                        </div>
+                        <div class="form-group">
+                            <label>Fecha Llegada</label>
+                            <input type="datetime-local" id="vuelo-fecha-llegada">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Precios por Clase ($)</label>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
+                            <div>
+                                <input type="number" id="vuelo-precio-economica" placeholder="Económica" step="0.01" min="0" style="background: rgba(255,255,255,0.08); color: #fff; padding: 10px; border: 1px solid rgba(255,255,255,0.2); border-radius: 8px;">
+                                <small style="color: #aaa;">Económica</small>
+                            </div>
+                            <div>
+                                <input type="number" id="vuelo-precio-business" placeholder="Business" step="0.01" min="0" style="background: rgba(255,255,255,0.08); color: #fff; padding: 10px; border: 1px solid rgba(255,255,255,0.2); border-radius: 8px;">
+                                <small style="color: #aaa;">Business</small>
+                            </div>
+                            <div>
+                                <input type="number" id="vuelo-precio-primera" placeholder="Primera" step="0.01" min="0" style="background: rgba(255,255,255,0.08); color: #fff; padding: 10px; border: 1px solid rgba(255,255,255,0.2); border-radius: 8px;">
+                                <small style="color: #aaa;">Primera</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" onclick="hideModal('vuelo-modal')">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Crear Vuelo</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="reserva-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Nueva Reserva</h3>
+                <button class="modal-close" onclick="hideModal('reserva-modal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form onsubmit="createReserva(event)">
+                    <div class="form-group">
+                        <label>Usuario</label>
+                        <select id="reserva-usuario" required></select>
+                    </div>
+                    <div class="form-group">
+                        <label>Vuelo</label>
+                        <select id="reserva-vuelo" required></select>
+                    </div>
+                    <div class="form-group">
+                        <label>Cantidad de Pasajeros</label>
+                        <input type="number" id="reserva-pasajeros" value="1" min="1" required>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" onclick="hideModal('reserva-modal')">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Crear Reserva</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="pasajero-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Nuevo Pasajero</h3>
+                <button class="modal-close" onclick="hideModal('pasajero-modal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form onsubmit="createPasajero(event)">
+                    <div class="form-group">
+                        <label>Vuelo</label>
+                        <select id="pasajero-vuelo" required onchange="onCambiarVueloPasajero()"></select>
+                    </div>
+                    <div class="form-group">
+                        <label>Nombre Completo</label>
+                        <input type="text" id="pasajero-nombre" placeholder="Nombre del pasajero" required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>DNI</label>
+                            <input type="text" id="pasajero-dni" placeholder="Número de documento">
+                        </div>
+                        <div class="form-group">
+                            <label>Email</label>
+                            <input type="email" id="pasajero-email" placeholder="email@ejemplo.com">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Clase</label>
+                        <select id="pasajero-clase" onchange="onCambiarClasePasajero()">
+                            <option value="economica">Económica</option>
+                            <option value="business">Business</option>
+                            <option value="primera">Primera</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Asiento</label>
+                        <button type="button" class="btn btn-primary" onclick="abrirSelectorAsientosPasajero()" style="width: 100%; margin-bottom: 10px;">
+                            <i class="fas fa-chair"></i> Seleccionar Asiento
+                        </button>
+                        <div id="pasajero-asientos-display" style="padding: 10px; background: rgba(0,0,0,0.3); border-radius: 8px; min-height: 40px;">
+                            <span style="color: rgba(255,255,255,0.5); font-size: 0.9rem;">No hay asiento seleccionado</span>
+                        </div>
+                        <input type="hidden" id="pasajero-asiento">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" onclick="hideModal('pasajero-modal')">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Registrar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="nave-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Nueva Aeronave</h3>
+                <button class="modal-close" onclick="hideModal('nave-modal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form onsubmit="createNave(event)">
+                    <div class="form-group">
+                        <label>Aerolínea</label>
+                        <select id="nave-aerolinea"></select>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Matrícula</label>
+                            <input type="text" id="nave-matricula" placeholder="N-12345" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Modelo</label>
+                            <input type="text" id="nave-modelo" placeholder="Boeing 737" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Capacidad</label>
+                            <input type="number" id="nave-capacidad" placeholder="180" min="1" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Estado</label>
+                            <select id="nave-estado">
+                                <option value="activo">Activo</option>
+                                <option value="mantenimiento">Mantenimiento</option>
+                                <option value="retirado">Retirado</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" onclick="hideModal('nave-modal')">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Crear</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="ruta-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Nueva Ruta</h3>
+                <button class="modal-close" onclick="hideModal('ruta-modal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form onsubmit="createRuta(event)">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Origen</label>
+                            <input type="text" id="ruta-origen" placeholder="Ciudad origen" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Código Origen</label>
+                            <input type="text" id="ruta-codigo-origen" placeholder="LIM" maxlength="5" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Destino</label>
+                            <input type="text" id="ruta-destino" placeholder="Ciudad destino" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Código Destino</label>
+                            <input type="text" id="ruta-codigo-destino" placeholder="MEX" maxlength="5" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Distancia (km)</label>
+                            <input type="number" id="ruta-distancia" placeholder="0">
+                        </div>
+                        <div class="form-group">
+                            <label>Duración (min)</label>
+                            <input type="number" id="ruta-duracion" placeholder="0">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" onclick="hideModal('ruta-modal')">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Crear</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="aerolinea-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Nueva Aerolínea</h3>
+                <button class="modal-close" onclick="hideModal('aerolinea-modal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form onsubmit="createAerolinea(event)">
+                    <div class="form-group">
+                        <label>Nombre</label>
+                        <input type="text" id="aerolinea-nombre" placeholder="Nombre de la aerolínea" required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Código</label>
+                            <input type="text" id="aerolinea-codigo" placeholder="LA" maxlength="10">
+                        </div>
+                        <div class="form-group">
+                            <label>País</label>
+                            <input type="text" id="aerolinea-pais" placeholder="País">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" onclick="hideModal('aerolinea-modal')">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Crear</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modales de Edición -->
+    <div class="modal-overlay" id="vuelo-edit-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Editar Vuelo</h3>
+                <button class="modal-close" onclick="hideModal('vuelo-edit-modal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form onsubmit="updateVuelo(event)">
+                    <input type="hidden" id="vuelo-edit-id">
+                    <div class="form-group">
+                        <label>Aerolínea</label>
+                        <select id="vuelo-edit-aerolinea" required></select>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Origen</label>
+                            <input type="text" id="vuelo-edit-origen">
+                        </div>
+                        <div class="form-group">
+                            <label>Destino</label>
+                            <input type="text" id="vuelo-edit-destino" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Número de Vuelo</label>
+                        <input type="text" id="vuelo-edit-numero">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Fecha Salida</label>
+                            <input type="datetime-local" id="vuelo-edit-fecha-salida">
+                        </div>
+                        <div class="form-group">
+                            <label>Fecha Llegada</label>
+                            <input type="datetime-local" id="vuelo-edit-fecha-llegada">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Precios por Clase ($)</label>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 10px;">
+                            <div>
+                                <input type="number" id="vuelo-edit-precio-economica" placeholder="Económica" step="0.01" min="0" style="background: rgba(255,255,255,0.08); color: #fff; padding: 10px; border: 1px solid rgba(255,255,255,0.2); border-radius: 8px;">
+                                <small style="color: #aaa;">Económica</small>
+                            </div>
+                            <div>
+                                <input type="number" id="vuelo-edit-precio-business" placeholder="Business" step="0.01" min="0" style="background: rgba(255,255,255,0.08); color: #fff; padding: 10px; border: 1px solid rgba(255,255,255,0.2); border-radius: 8px;">
+                                <small style="color: #aaa;">Business</small>
+                            </div>
+                            <div>
+                                <input type="number" id="vuelo-edit-precio-primera" placeholder="Primera" step="0.01" min="0" style="background: rgba(255,255,255,0.08); color: #fff; padding: 10px; border: 1px solid rgba(255,255,255,0.2); border-radius: 8px;">
+                                <small style="color: #aaa;">Primera</small>
+                            </div>
+                            <div class="form-group" style="margin: 0;">
+                                <label style="color: #aaa; font-size: 0.8rem;">Estado</label>
+                                <select id="vuelo-edit-estado" style="background: rgba(255,255,255,0.08); color: #fff; padding: 10px; border: 1px solid rgba(255,255,255,0.2); border-radius: 8px;">
+                                    <option value="programado">Programado</option>
+                                    <option value="abordando">Abordando</option>
+                                    <option value="en_vuelo">En Vuelo</option>
+                                    <option value="aterrizado">Aterrizado</option>
+                                    <option value="cancelado">Cancelado</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" onclick="hideModal('vuelo-edit-modal')">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="reserva-edit-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Editar Reserva</h3>
+                <button class="modal-close" onclick="hideModal('reserva-edit-modal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form onsubmit="updateReserva(event)">
+                    <input type="hidden" id="reserva-edit-id">
+                    <div class="form-group">
+                        <label>Usuario</label>
+                        <select id="reserva-edit-usuario" required></select>
+                    </div>
+                    <div class="form-group">
+                        <label>Vuelo</label>
+                        <select id="reserva-edit-vuelo" required></select>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Cantidad de Pasajeros</label>
+                            <input type="number" id="reserva-edit-pasajeros" min="1" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Estado</label>
+                            <select id="reserva-edit-estado">
+                                <option value="pendiente">Pendiente</option>
+                                <option value="confirmada">Confirmada</option>
+                                <option value="cancelada">Cancelada</option>
+                                <option value="completada">Completada</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" onclick="hideModal('reserva-edit-modal')">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="pasajero-edit-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Editar Pasajero</h3>
+                <button class="modal-close" onclick="hideModal('pasajero-edit-modal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form onsubmit="updatePasajero(event)">
+                    <input type="hidden" id="pasajero-edit-id">
+                    <div class="form-group">
+                        <label>Vuelo</label>
+                        <select id="pasajero-edit-vuelo" required></select>
+                    </div>
+                    <div class="form-group">
+                        <label>Nombre Completo</label>
+                        <input type="text" id="pasajero-edit-nombre" required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>DNI</label>
+                            <input type="text" id="pasajero-edit-dni">
+                        </div>
+                        <div class="form-group">
+                            <label>Email</label>
+                            <input type="email" id="pasajero-edit-email">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Clase</label>
+                            <select id="pasajero-edit-clase">
+                                <option value="economica">Económica</option>
+                                <option value="business">Business</option>
+                                <option value="primera">Primera</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Asiento</label>
+                            <input type="text" id="pasajero-edit-asiento">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Estado</label>
+                        <select id="pasajero-edit-estado">
+                            <option value="confirmada">Confirmada</option>
+                            <option value="pendiente">Pendiente</option>
+                            <option value="cancelada">Cancelada</option>
+                        </select>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" onclick="hideModal('pasajero-edit-modal')">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="nave-edit-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Editar Aeronave</h3>
+                <button class="modal-close" onclick="hideModal('nave-edit-modal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form onsubmit="updateNave(event)">
+                    <input type="hidden" id="nave-edit-id">
+                    <div class="form-group">
+                        <label>Aerolínea</label>
+                        <select id="nave-edit-aerolinea"></select>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Matrícula</label>
+                            <input type="text" id="nave-edit-matricula" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Modelo</label>
+                            <input type="text" id="nave-edit-modelo" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Capacidad</label>
+                            <input type="number" id="nave-edit-capacidad" min="1" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Estado</label>
+                            <select id="nave-edit-estado">
+                                <option value="activo">Activo</option>
+                                <option value="mantenimiento">Mantenimiento</option>
+                                <option value="retirado">Retirado</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" onclick="hideModal('nave-edit-modal')">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="asientos-modal">
+        <div class="modal" style="max-width: 700px; max-height: 90vh;">
+            <div class="modal-header">
+                <h3><i class="fas fa-chair"></i> Asientos de Aeronave</h3>
+                <button class="modal-close" onclick="hideModal('asientos-modal')">&times;</button>
+            </div>
+            <div class="modal-body" style="overflow-y: auto;">
+                <div style="margin-bottom: 15px; padding: 12px; background: linear-gradient(135deg, #1a2744, #0a1628); border-radius: 10px; border: 1px solid #00b4d8;">
+                    <strong style="color: #00b4d8; font-size: 1rem;" id="asientos-nave-info"></strong>
+                </div>
+                <div style="text-align: center; margin-bottom: 20px; padding: 10px; background: rgba(255,255,255,0.05); border-radius: 8px;">
+                    <div style="display: inline-flex; gap: 25px; font-size: 0.9rem;">
+                        <span style="display: flex; align-items: center; gap: 8px;"><span style="width: 20px; height: 20px; background: #f72585; border-radius: 4px;"></span> Primera</span>
+                        <span style="display: flex; align-items: center; gap: 8px;"><span style="width: 20px; height: 20px; background: #ffd166; border-radius: 4px;"></span> Business</span>
+                        <span style="display: flex; align-items: center; gap: 8px;"><span style="width: 20px; height: 20px; background: #06d6a0; border-radius: 4px;"></span> Económica</span>
+                    </div>
+                </div>
+                <div id="asientos-grid" style="padding: 15px; background: rgba(0,0,0,0.4); border-radius: 12px;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Selector de Asientos para Pasajero -->
+    <div class="modal-overlay" id="pasajero-asientos-modal">
+        <div class="modal" style="max-width: 600px;">
+            <div class="modal-header">
+                <h3><i class="fas fa-chair"></i> Seleccionar Asiento</h3>
+                <button class="modal-close" onclick="hideModal('pasajero-asientos-modal')">&times;</button>
+            </div>
+            <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
+                <div style="margin-bottom: 15px; padding: 12px; background: linear-gradient(135deg, #1a2744, #0a1628); border-radius: 10px; border: 1px solid #00b4d8;">
+                    <strong style="color: #00b4d8; font-size: 0.9rem;" id="pasajero-asientos-info"></strong>
+                    <div style="margin-top: 8px; display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+                        <span style="display: flex; align-items: center; gap: 5px; font-size: 0.8rem;"><span style="width: 18px; height: 18px; background: #06d6a0; border-radius: 3px;"></span> Disponible</span>
+                        <span style="display: flex; align-items: center; gap: 5px; font-size: 0.8rem;"><span style="width: 18px; height: 18px; background: #ffd166; border-radius: 3px; box-shadow: 0 0 8px #ffd166;"></span> Seleccionado</span>
+                        <span style="display: flex; align-items: center; gap: 5px; font-size: 0.8rem;"><span style="width: 18px; height: 18px; background: #666; border-radius: 3px; opacity: 0.6;"></span> Ocupado</span>
+                    </div>
+                </div>
+                <div id="pasajero-selector-asientos-grid" style="padding: 15px; background: rgba(0,0,0,0.4); border-radius: 12px;"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="hideModal('pasajero-asientos-modal')">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="confirmarAsientoPasajero()">
+                    <i class="fas fa-check"></i> Confirmar Asiento
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="ruta-edit-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Editar Ruta</h3>
+                <button class="modal-close" onclick="hideModal('ruta-edit-modal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form onsubmit="updateRuta(event)">
+                    <input type="hidden" id="ruta-edit-id">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Origen</label>
+                            <input type="text" id="ruta-edit-origen" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Código Origen</label>
+                            <input type="text" id="ruta-edit-codigo-origen" maxlength="5" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Destino</label>
+                            <input type="text" id="ruta-edit-destino" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Código Destino</label>
+                            <input type="text" id="ruta-edit-codigo-destino" maxlength="5" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Distancia (km)</label>
+                            <input type="number" id="ruta-edit-distancia">
+                        </div>
+                        <div class="form-group">
+                            <label>Duración (min)</label>
+                            <input type="number" id="ruta-edit-duracion">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" onclick="hideModal('ruta-edit-modal')">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="aerolinea-edit-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Editar Aerolínea</h3>
+                <button class="modal-close" onclick="hideModal('aerolinea-edit-modal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form onsubmit="updateAerolinea(event)">
+                    <input type="hidden" id="aerolinea-edit-id">
+                    <div class="form-group">
+                        <label>Nombre</label>
+                        <input type="text" id="aerolinea-edit-nombre" required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Código</label>
+                            <input type="text" id="aerolinea-edit-codigo" maxlength="10">
+                        </div>
+                        <div class="form-group">
+                            <label>País</label>
+                            <input type="text" id="aerolinea-edit-pais">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" onclick="hideModal('aerolinea-edit-modal')">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        window.token = localStorage.getItem('token');
+        
+        function checkRole() {
+            const userData = localStorage.getItem('user');
+            if (!userData) return false;
+            window.currentUser = JSON.parse(userData);
+            return window.currentUser && (window.currentUser.rol === 'admin' || window.currentUser.rol === 'operador');
+        }
+
+        function showDashboardView() {
+            document.getElementById('dashboard-view').style.display = 'block';
+            if (window.currentUser) {
+                document.getElementById('user-name').textContent = window.currentUser.nombre;
+                document.getElementById('user-role').textContent = window.currentUser.rol === 'admin' ? 'Administrador' : 'Operador';
+                document.getElementById('user-avatar').textContent = window.currentUser.nombre.charAt(0).toUpperCase();
+            }
+            loadDashboardData();
+        }
+
+        async function loadDashboardData() {
+            try {
+                const [vuelosRes, reservasRes, navesRes, pasajerosRes] = await Promise.all([
+                    apiRequest('/vuelos'), apiRequest('/reservas'), apiRequest('/naves'), apiRequest('/pasajeros')
+                ]);
+                const vuelos = vuelosRes.data || [];
+                const reservas = reservasRes.data || [];
+                const naves = navesRes.data || [];
+                const pasajeros = pasajerosRes.data || [];
+                
+                document.getElementById('total-vuelos').textContent = vuelos.length;
+                document.getElementById('total-reservas').textContent = reservas.length;
+                document.getElementById('total-naves').textContent = naves.filter(n => n.estado === 'activo').length;
+                document.getElementById('total-pasajeros').textContent = pasajeros.length;
+                
+                const vuelosActivos = vuelos.filter(v => v.estado === 'en_vuelo' || v.estado === 'programado').length;
+                const ingresosTotales = reservas.reduce((sum, r) => sum + (r.total || 0), 0);
+                
+                document.getElementById('vuelos-activos').textContent = vuelosActivos;
+                document.getElementById('ingresos-totales').textContent = '$' + ingresosTotales.toLocaleString();
+                
+                renderRecentActivity(vuelos, reservas);
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        function showRegister() {
+            document.getElementById('login-form').style.display = 'none';
+            document.getElementById('register-form').style.display = 'block';
+        }
+
+        function showLogin() {
+            document.getElementById('register-form').style.display = 'none';
+            document.getElementById('login-form').style.display = 'block';
+        }
+
+        async function handleLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            const alertDiv = document.getElementById('login-alert');
+            try {
+                await login(email, password);
+            } catch (error) {
+                alertDiv.innerHTML = `<div class="alert alert-error" style="display: block;">${error.message}</div>`;
+            }
+        }
+
+        async function handleRegister(e) {
+            e.preventDefault();
+            const nombre = document.getElementById('register-nombre').value;
+            const email = document.getElementById('register-email').value;
+            const password = document.getElementById('register-password').value;
+            const rol = document.getElementById('register-rol').value;
+            const alertDiv = document.getElementById('login-alert');
+            try {
+                const result = await registro(nombre, email, password, rol);
+                alertDiv.innerHTML = `<div class="alert alert-success" style="display: block;">${result.mensaje}</div>`;
+                showLogin();
+            } catch (error) {
+                alertDiv.innerHTML = `<div class="alert alert-error" style="display: block;">${error.message}</div>`;
+            }
+        }
+
+        function showModal(id) { document.getElementById(id).classList.add('active'); }
+        function hideModal(id) { document.getElementById(id).classList.remove('active'); }
+
+        function getRolBadge(rol) {
+            const map = { 'admin': 'table-badge-danger', 'operador': 'table-badge-warning', 'cliente': 'table-badge-success' };
+            return `<span class="table-badge ${map[rol] || 'table-badge-info'}">${rol}</span>`;
+        }
+
+        function getEstadoBadge(estado) {
+            const map = {
+                'programado': 'table-badge-info', 'en_vuelo': 'table-badge-primary', 'aterrizado': 'table-badge-success',
+                'cancelado': 'table-badge-danger', 'pendiente': 'table-badge-warning', 'confirmada': 'table-badge-success',
+                'completada': 'table-badge-primary', 'activo': 'table-badge-success', 'mantenimiento': 'table-badge-warning',
+                'retirado': 'table-badge-danger', 'abordando': 'table-badge-pink'
+            };
+            const labels = { 'programado': 'Programado', 'en_vuelo': 'En Vuelo', 'aterrizado': 'Aterrizado', 'cancelado': 'Cancelado', 'pendiente': 'Pendiente', 'confirmada': 'Confirmada', 'completada': 'Completado', 'activo': 'Activo', 'mantenimiento': 'Mantenimiento', 'retirado': 'Retirado', 'abordando': 'Abordando' };
+            return `<span class="table-badge ${map[estado] || 'table-badge-info'}">${labels[estado] || estado}</span>`;
+        }
+
+        let allUsuarios = [];
+        async function loadUsuarios() {
+            const result = await apiRequest('/usuarios');
+            const usuarios = result.data || [];
+            allUsuarios = usuarios;
+            const container = document.getElementById('usuarios-list');
+            container.innerHTML = usuarios.length ? `
+                <table>
+                    <thead>
+                        <tr>
+                            <th><i class="fas fa-user"></i> Nombre</th>
+                            <th><i class="fas fa-envelope"></i> Email</th>
+                            <th><i class="fas fa-user-tag"></i> Rol</th>
+                            <th><i class="fas fa-cogs"></i> Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>${usuarios.map(u => `<tr>
+                        <td><strong>${u.nombre}</strong></td>
+                        <td>${u.email}</td>
+                        <td>${getRolBadge(u.rol)}</td>
+                        <td>
+                            <div class="table-actions">
+                                <button class="btn btn-sm" style="background: rgba(0,180,216,0.2); color: #00b4d8; border: 1px solid rgba(0,180,216,0.3);" onclick="editUsuario(${u.id})" title="Editar"><i class="fas fa-edit"></i></button>
+                                <button class="btn btn-sm" style="background: rgba(239,71,111,0.2); color: #ef476f; border: 1px solid rgba(239,71,111,0.3);" onclick="deleteUsuario(${u.id})" title="Eliminar"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </td>
+                    </tr>`).join('')}</tbody></table>
+            ` : '<div class="empty-state"><i class="fas fa-users"></i><h4>No hay usuarios</h4><p>Agrega un nuevo usuario para comenzar</p></div>';
+        }
+
+        async function editUsuario(id) {
+            const usuario = allUsuarios.find(u => u.id === id);
+            if (!usuario) return;
+            document.getElementById('usuario-edit-id').value = id;
+            document.getElementById('usuario-edit-nombre').value = usuario.nombre || '';
+            document.getElementById('usuario-edit-email').value = usuario.email || '';
+            document.getElementById('usuario-edit-rol').value = usuario.rol || 'cliente';
+            document.getElementById('usuario-edit-password').value = '';
+            showModal('usuario-edit-modal');
+        }
+
+        async function updateUsuario(e) {
+            e.preventDefault();
+            const id = document.getElementById('usuario-edit-id').value;
+            const nombre = document.getElementById('usuario-edit-nombre').value;
+            const password = document.getElementById('usuario-edit-password').value;
+            const rol = document.getElementById('usuario-edit-rol').value;
+            
+            const data = { nombre, rol };
+            if (password) data.password = password;
+            
+            await apiRequest(`/usuarios/${id}`, 'PUT', data);
+            hideModal('usuario-edit-modal');
+            loadUsuarios();
+        }
+
+        async function deleteUsuario(id) {
+            if (!confirm('¿Eliminar este usuario?')) return;
+            await apiRequest(`/usuarios/${id}`, 'DELETE');
+            loadUsuarios();
+        }
+
+        async function createUsuario(e) {
+            e.preventDefault();
+            await apiRequest('/usuarios', 'POST', {
+                nombre: document.getElementById('usuario-nombre').value,
+                email: document.getElementById('usuario-email').value,
+                password: document.getElementById('usuario-password').value,
+                rol: document.getElementById('usuario-rol').value
+            });
+            hideModal('usuario-modal');
+            loadUsuarios();
+            e.target.reset();
+        }
+
+        let allVuelos = [];
+        async function loadVuelos() {
+            const result = await apiRequest('/vuelos');
+            const vuelos = result.data || [];
+            allVuelos = vuelos;
+            const container = document.getElementById('vuelos-list');
+            container.innerHTML = vuelos.length ? `
+                <table>
+                    <thead>
+                        <tr>
+                            <th><i class="fas fa-plane"></i> Vuelo</th>
+                            <th><i class="fas fa-building"></i> Aerolínea</th>
+                            <th><i class="fas fa-plane-departure"></i> Origen</th>
+                            <th><i class="fas fa-plane-arrival"></i> Destino</th>
+                            <th><i class="fas fa-calendar"></i> Salida</th>
+                            <th><i class="fas fa-tag"></i> Precio</th>
+                            <th><i class="fas fa-info-circle"></i> Estado</th>
+                            <th><i class="fas fa-cogs"></i> Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>${vuelos.map(v => `<tr>
+                        <td><strong>${v.numero_vuelo || '-'}</strong></td>
+                        <td>${v.aerolinea?.nombre || v.aerolinea || '-'}</td>
+                        <td>${v.origen || '-'}</td>
+                        <td>${v.destino || '-'}</td>
+                        <td>${v.fecha_salida ? new Date(v.fecha_salida).toLocaleDateString() : '-'}</td>
+                        <td><span style="color: #06d6a0; font-weight: 600;">$${Number(v.precio_base || 0).toFixed(2)}</span></td>
+                        <td>${getEstadoBadge(v.estado)}</td>
+                        <td>
+                            <div class="table-actions">
+                                <button class="btn btn-sm" style="background: rgba(0,180,216,0.2); color: #00b4d8; border: 1px solid rgba(0,180,216,0.3);" onclick="editVuelo(${v.id})" title="Editar"><i class="fas fa-edit"></i></button>
+                                <button class="btn btn-sm" style="background: rgba(239,71,111,0.2); color: #ef476f; border: 1px solid rgba(239,71,111,0.3);" onclick="deleteVuelo(${v.id})" title="Eliminar"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </td>
+                    </tr>`).join('')}</tbody></table>
+            ` : '<div class="empty-state"><i class="fas fa-plane-slash"></i><h4>No hay vuelos</h4><p>Crea un nuevo vuelo para comenzar</p></div>';
+        }
+
+        let allReservas = [];
+        async function loadReservas() {
+            const result = await apiRequest('/reservas');
+            const reservas = result.data || [];
+            allReservas = reservas;
+            const container = document.getElementById('reservas-list');
+            container.innerHTML = reservas.length ? `
+                <table>
+                    <thead>
+                        <tr>
+                            <th><i class="fas fa-ticket-alt"></i> Código</th>
+                            <th><i class="fas fa-user"></i> Usuario</th>
+                            <th><i class="fas fa-plane"></i> Vuelo</th>
+                            <th><i class="fas fa-chair"></i> Clase</th>
+                            <th><i class="fas fa-users"></i> Pax</th>
+                            <th><i class="fas fa-chair"></i> Asientos</th>
+                            <th><i class="fas fa-dollar-sign"></i> Total</th>
+                            <th><i class="fas fa-info-circle"></i> Estado</th>
+                            <th><i class="fas fa-cogs"></i> Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>${reservas.map(r => `<tr>
+                        <td><strong>${r.codigo_reserva}</strong></td>
+                        <td>${r.usuario?.nombre || '-'}</td>
+                        <td>${r.vuelo?.numero_vuelo || '-'}</td>
+                        <td><span class="table-badge table-badge-primary">${r.clase || '-'}</span></td>
+                        <td><strong>${r.cantidad_pasajeros}</strong></td>
+                        <td>${r.asientos || '-'}</td>
+                        <td><span style="color: #06d6a0; font-weight: 600;">$${Number(r.total || 0).toFixed(2)}</span></td>
+                        <td>${getEstadoBadge(r.estado)}</td>
+                        <td>
+                            <div class="table-actions">
+                                <button class="btn btn-sm" style="background: rgba(0,180,216,0.2); color: #00b4d8; border: 1px solid rgba(0,180,216,0.3);" onclick="editReserva(${r.id})" title="Editar"><i class="fas fa-edit"></i></button>
+                                <button class="btn btn-sm" style="background: rgba(239,71,111,0.2); color: #ef476f; border: 1px solid rgba(239,71,111,0.3);" onclick="cancelReserva(${r.id})" title="Cancelar"><i class="fas fa-times"></i></button>
+                            </div>
+                        </td>
+                    </tr>`).join('')}</tbody></table>
+            ` : '<div class="empty-state"><i class="fas fa-ticket-alt"></i><h4>No hay reservas</h4><p>Crea una nueva reserva para comenzar</p></div>';
+        }
+
+        let allPasajeros = [];
+        async function loadPasajeros() {
+            const result = await apiRequest('/pasajeros');
+            const pasajeros = result.data || [];
+            allPasajeros = pasajeros;
+            const container = document.getElementById('pasajeros-list');
+            container.innerHTML = pasajeros.length ? `
+                <table>
+                    <thead>
+                        <tr>
+                            <th><i class="fas fa-user"></i> Nombre</th>
+                            <th><i class="fas fa-id-card"></i> DNI</th>
+                            <th><i class="fas fa-ticket-alt"></i> Reserva</th>
+                            <th><i class="fas fa-plane"></i> Vuelo</th>
+                            <th><i class="fas fa-chair"></i> Clase</th>
+                            <th><i class="fas fa-chair"></i> Asiento</th>
+                            <th><i class="fas fa-info-circle"></i> Estado</th>
+                            <th><i class="fas fa-cogs"></i> Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>${pasajeros.map(p => `<tr>
+                        <td><strong>${p.nombre_completo}</strong></td>
+                        <td>${p.dni || '-'}</td>
+                        <td>${p.reserva?.codigo_reserva || '-'}</td>
+                        <td>${p.vuelo?.numero_vuelo || '-'}</td>
+                        <td><span class="table-badge table-badge-primary">${p.clase || '-'}</span></td>
+                        <td><span style="color: #ffd166; font-weight: 600;">${p.asiento || '-'}</span></td>
+                        <td>${getEstadoBadge(p.estado_reserva)}</td>
+                        <td>
+                            <div class="table-actions">
+                                <button class="btn btn-sm" style="background: rgba(0,180,216,0.2); color: #00b4d8; border: 1px solid rgba(0,180,216,0.3);" onclick="editPasajero(${p.id})" title="Editar"><i class="fas fa-edit"></i></button>
+                                <button class="btn btn-sm" style="background: rgba(239,71,111,0.2); color: #ef476f; border: 1px solid rgba(239,71,111,0.3);" onclick="deletePasajero(${p.id})" title="Eliminar"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </td>
+                    </tr>`).join('')}</tbody></table>
+            ` : '<div class="empty-state"><i class="fas fa-users"></i><h4>No hay pasajeros</h4><p>Registra un nuevo pasajero para comenzar</p></div>';
+        }
+
+        let allNaves = [];
+        async function loadNaves() {
+            const result = await apiRequest('/naves');
+            const naves = result.data || [];
+            allNaves = naves;
+            const container = document.getElementById('naves-list');
+            container.innerHTML = naves.length ? `
+                <table>
+                    <thead>
+                        <tr>
+                            <th><i class="fas fa-id-card"></i> Matrícula</th>
+                            <th><i class="fas fa-plane"></i> Modelo</th>
+                            <th><i class="fas fa-building"></i> Aerolínea</th>
+                            <th><i class="fas fa-users"></i> Capacidad</th>
+                            <th><i class="fas fa-info-circle"></i> Estado</th>
+                            <th><i class="fas fa-cogs"></i> Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>${naves.map(n => `<tr>
+                        <td><strong>${n.matricula}</strong></td>
+                        <td>${n.modelo}</td>
+                        <td>${n.aerolinea?.nombre || n.aerolinea || '-'}</td>
+                        <td><span style="color: #00b4d8; font-weight: 600;">${n.capacidad}</span> pax</td>
+                        <td>${getEstadoBadge(n.estado)}</td>
+                        <td>
+                            <div class="table-actions">
+                                <button class="btn btn-sm" style="background: rgba(255,209,102,0.2); color: #ffd166; border: 1px solid rgba(255,209,102,0.3);" onclick="verAsientosNave(${n.id}, '${n.matricula}', ${n.capacidad})" title="Ver Asientos"><i class="fas fa-chair"></i></button>
+                                <button class="btn btn-sm" style="background: rgba(0,180,216,0.2); color: #00b4d8; border: 1px solid rgba(0,180,216,0.3);" onclick="editNave(${n.id})" title="Editar"><i class="fas fa-edit"></i></button>
+                                <button class="btn btn-sm" style="background: rgba(239,71,111,0.2); color: #ef476f; border: 1px solid rgba(239,71,111,0.3);" onclick="deleteNave(${n.id})" title="Eliminar"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </td>
+                    </tr>`).join('')}</tbody></table>
+            ` : '<div class="empty-state"><i class="fas fa-plane"></i><h4>No hay aeronaves</h4><p>Agrega una nueva aeronave para comenzar</p></div>';
+        }
+
+        async function verAsientosNave(naveId, matricula, capacidad) {
+            document.getElementById('asientos-nave-info').textContent = `Aeronave: ${matricula} - Capacidad: ${capacidad} asientos`;
+            
+            try {
+                const [pasajerosRes, reservasRes] = await Promise.all([
+                    apiRequest('/pasajeros'),
+                    apiRequest('/reservas')
+                ]);
+                
+                const asientosOcupados = { primera: new Set(), business: new Set(), economica: new Set() };
+                const pasajeros = pasajerosRes.data || [];
+                
+                pasajeros.forEach(p => {
+                    if (p.asiento) {
+                        const asiento = p.asiento.toUpperCase().trim();
+                        if (p.clase === 'primera') asientosOcupados.primera.add(asiento);
+                        else if (p.clase === 'business') asientosOcupados.business.add(asiento);
+                        else asientosOcupados.economica.add(asiento);
+                    }
+                });
+                
+                const container = document.getElementById('asientos-grid');
+                
+                const letras = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+                const seatsPorFila = 6;
+                
+                const seatsPorClase = {
+                    primera: { inicio: 1, fin: Math.min(6, capacidad), color: '#f72585', nombre: 'Primera Clase' },
+                    business: { inicio: 7, fin: Math.min(18, capacidad), color: '#ffd166', nombre: 'Business' },
+                    economica: { inicio: 19, fin: capacidad, color: '#06d6a0', nombre: 'Económica' }
+                };
+                
+                function generarFila(rowNum, inicio, fin, clase, color) {
+                    let html = `<div style="display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 8px;">`;
+                    
+                    for (let i = inicio; i <= fin; i++) {
+                        const rowLetter = Math.ceil(i / seatsPorFila);
+                        if (rowLetter !== Math.ceil((i-1) / seatsPorFila) + 1 && i !== inicio) {
+                            rowLetter = Math.ceil(i / seatsPorFila);
+                        }
+                        
+                        const seatLetter = letras[(i - 1) % seatsPorFila];
+                        const seatNum = Math.ceil(i / seatsPorFila);
+                        const asiento = `${seatLetter}${seatNum}`;
+                        const ocupado = asientosOcupados[clase].has(asiento);
+                        
+                        html += `<div style="width: 40px; height: 40px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.75rem; cursor: not-allowed; background: ${ocupado ? color : 'rgba(255,255,255,0.08)'}; color: ${ocupado ? '#fff' : color}; border: 1px solid ${color};">
+                            ${asiento}
+                        </div>`;
+                        
+                        if ((i - inicio + 1) % 3 === 0 && i < fin) {
+                            html += `<div style="width: 20px;"></div>`;
+                        }
+                    }
+                    html += `</div>`;
+                    return html;
+                }
+                
+                let html = '';
+                
+                if (capacidad <= 6) {
+                    seatsPorClase.primera.fin = capacidad;
+                    delete seatsPorClase.business;
+                    delete seatsPorClase.economica;
+                } else if (capacidad <= 18) {
+                    seatsPorClase.primera.fin = 6;
+                    seatsPorClase.business.fin = capacidad;
+                    delete seatsPorClase.economica;
+                }
+                
+                for (const [clase, info] of Object.entries(seatsPorClase)) {
+                    if (info.inicio > capacidad) continue;
+                    
+                    const filas = Math.ceil((info.fin - info.inicio + 1) / seatsPorFila);
+                    
+                    html += `<div style="margin-bottom: 25px;">
+                        <h4 style="color: ${info.color}; margin-bottom: 15px; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid ${info.color}40; padding-bottom: 8px;">${info.nombre} (Asientos ${info.inicio} - ${info.fin})</h4>
+                        <div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 10px;">`;
+                    
+                    for (let row = 0; row < filas; row++) {
+                        const rowStart = info.inicio + (row * seatsPorFila);
+                        const rowEnd = Math.min(rowStart + seatsPorFila - 1, info.fin);
+                        
+                        if (rowStart > info.fin) break;
+                        
+                        html += `<div style="display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 6px;">
+                            <span style="color: rgba(255,255,255,0.4); font-size: 0.7rem; width: 20px; text-align: right;">${Math.ceil(rowStart / seatsPorFila)}</span>`;
+                        
+                        for (let i = rowStart; i <= rowEnd; i++) {
+                            const seatLetter = letras[(i - 1) % seatsPorFila];
+                            const seatNum = Math.ceil(i / seatsPorFila);
+                            const asiento = `${seatLetter}${seatNum}`;
+                            const ocupado = asientosOcupados[clase].has(asiento);
+                            
+                            html += `<div style="width: 36px; height: 36px; border-radius: 5px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.7rem; cursor: not-allowed; background: ${ocupado ? info.color : 'rgba(255,255,255,0.08)'}; color: ${ocupado ? '#fff' : info.color}; border: 1px solid ${info.color};">
+                                ${seatLetter}${seatNum}
+                            </div>`;
+                            
+                            if ((i - rowStart + 1) === 3 && rowEnd - rowStart + 1 > 3) {
+                                html += `<div style="width: 25px; height: 1px; background: rgba(255,255,255,0.1);"></div>`;
+                            }
+                        }
+                        
+                        html += `<span style="color: rgba(255,255,255,0.4); font-size: 0.7rem; width: 20px; text-align: left;">${Math.ceil(rowStart / seatsPorFila)}</span></div>`;
+                    }
+                    
+                    html += `</div></div>`;
+                }
+                
+                container.innerHTML = html;
+                showModal('asientos-modal');
+            } catch (error) {
+                alert('Error al cargar asientos: ' + error.message);
+            }
+        }
+
+        let pasajeroAsientoSeleccionado = '';
+
+        function onCambiarVueloPasajero() {
+            pasajeroAsientoSeleccionado = '';
+            actualizarDisplayAsientoPasajero();
+        }
+
+        function onCambiarClasePasajero() {
+            pasajeroAsientoSeleccionado = '';
+            actualizarDisplayAsientoPasajero();
+        }
+
+        function actualizarDisplayAsientoPasajero() {
+            const container = document.getElementById('pasajero-asientos-display');
+            document.getElementById('pasajero-asiento').value = pasajeroAsientoSeleccionado;
+            
+            if (!pasajeroAsientoSeleccionado) {
+                container.innerHTML = '<span style="color: rgba(255,255,255,0.5); font-size: 0.9rem;">No hay asiento seleccionado</span>';
+            } else {
+                container.innerHTML = '<span style="background: #ffd166; color: #000; padding: 5px 12px; border-radius: 20px; font-weight: bold; font-size: 0.9rem;">' + pasajeroAsientoSeleccionado + '</span>';
+            }
+        }
+
+        async function abrirSelectorAsientosPasajero() {
+            const vueloId = document.getElementById('pasajero-vuelo').value;
+            const clase = document.getElementById('pasajero-clase').value;
+            
+            if (!vueloId) {
+                alert('Por favor selecciona un vuelo primero');
+                return;
+            }
+            
+            try {
+                const [vuelosRes, pasajerosRes] = await Promise.all([
+                    apiRequest('/vuelos'),
+                    apiRequest('/pasajeros')
+                ]);
+                
+                const vuelo = (vuelosRes.data || []).find(v => v.id === parseInt(vueloId));
+                const capacidad = vuelo?.capacidad || 30;
+                
+                document.getElementById('pasajero-asientos-info').textContent = `Vuelo: ${vuelo?.numero_vuelo || '-'} | Clase: ${clase.charAt(0).toUpperCase() + clase.slice(1)}`;
+                
+                const asientosOcupados = new Set();
+                const pasajeros = pasajerosRes.data || [];
+                
+                pasajeros.forEach(p => {
+                    if (p.asiento && p.vuelo_id === parseInt(vueloId)) {
+                        asientosOcupados.add(p.asiento.toUpperCase().trim());
+                    }
+                });
+                
+                const container = document.getElementById('pasajero-selector-asientos-grid');
+                const letras = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+                
+                const seatsPorClase = {
+                    primera: { inicio: 1, fin: Math.min(6, capacidad), color: '#f72585', nombre: 'Primera Clase' },
+                    business: { inicio: 7, fin: Math.min(18, capacidad), color: '#ffd166', nombre: 'Business' },
+                    economica: { inicio: 19, fin: capacidad, color: '#06d6a0', nombre: 'Económica' }
+                };
+                
+                const rango = seatsPorClase[clase] || seatsPorClase.economica;
+                
+                if (rango.fin < rango.inicio) {
+                    container.innerHTML = `<div style="text-align: center; padding: 30px; color: #fff;"><i class="fas fa-info-circle"></i> No hay asientos disponibles en ${rango.nombre}</div>`;
+                    showModal('pasajero-asientos-modal');
+                    return;
+                }
+                
+                const maxFilas = Math.ceil(capacidad / 6);
+                let html = '';
+                
+                html += `<div style="margin-bottom: 15px; padding: 10px; background: rgba(0,0,0,0.3); border-radius: 8px; text-align: center;">
+                    <span style="color: ${rango.color}; font-weight: bold;">${rango.nombre}</span>
+                    <span style="color: rgba(255,255,255,0.5); font-size: 0.85rem;"> | Asientos ${rango.inicio} - ${rango.fin}</span>
+                </div>`;
+                
+                for (let f = 0; f < maxFilas; f++) {
+                    html += `<div style="display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 6px;">`;
+                    
+                    for (let c = 1; c <= 6; c++) {
+                        const num = (f * 6) + c;
+                        
+                        if (num < rango.inicio || num > rango.fin) {
+                            html += `<div style="width: 40px; height: 40px; background: transparent; border: 1px dashed rgba(255,255,255,0.1);"></div>`;
+                            continue;
+                        }
+                        
+                        const letra = letras[f] || 'A';
+                        const asiento = `${letra}${c}`;
+                        const ocupado = asientosOcupados.has(asiento);
+                        const seleccionado = pasajeroAsientoSeleccionado === asiento;
+                        
+                        if (ocupado) {
+                            html += `<div style="width: 40px; height: 40px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.75rem; cursor: not-allowed; background: #666; color: #fff; opacity: 0.6; border: 1px solid #888;">
+                                ${asiento}
+                            </div>`;
+                        } else {
+                            html += `<div onclick="toggleAsientoPasajero('${asiento}')" style="width: 40px; height: 40px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.75rem; cursor: pointer; ${seleccionado ? 'background: #ffd166; color: #000; box-shadow: 0 0 10px #ffd166; border: 2px solid #fff;' : 'background: ' + rango.color + '; color: #000; border: 1px solid ' + rango.color + ';'}">${asiento}</div>`;
+                        }
+                        
+                        if (c === 3 && num + 1 <= rango.fin) {
+                            html += `<div style="width: 25px;"></div>`;
+                        }
+                    }
+                    
+                    html += `</div>`;
+                }
+                
+                container.innerHTML = html;
+                showModal('pasajero-asientos-modal');
+            } catch (error) {
+                alert('Error al cargar asientos: ' + error.message);
+            }
+        }
+
+        function toggleAsientoPasajero(asiento) {
+            pasajeroAsientoSeleccionado = pasajeroAsientoSeleccionado === asiento ? '' : asiento;
+            abrirSelectorAsientosPasajero();
+        }
+
+        function confirmarAsientoPasajero() {
+            actualizarDisplayAsientoPasajero();
+            hideModal('pasajero-asientos-modal');
+        }
+
+        let allRutas = [];
+        async function loadRutas() {
+            const result = await apiRequest('/rutas');
+            const rutas = result.data || [];
+            allRutas = rutas;
+            const container = document.getElementById('rutas-list');
+            container.innerHTML = rutas.length ? `
+                <table>
+                    <thead>
+                        <tr>
+                            <th><i class="fas fa-route"></i> Ruta</th>
+                            <th><i class="fas fa-plane-departure"></i> Origen</th>
+                            <th><i class="fas fa-plane-arrival"></i> Destino</th>
+                            <th><i class="fas fa-ruler"></i> Distancia</th>
+                            <th><i class="fas fa-clock"></i> Duración</th>
+                            <th><i class="fas fa-cogs"></i> Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>${rutas.map(r => `<tr>
+                        <td><strong style="color: #00b4d8;">${r.codigo_origen} → ${r.codigo_destino}</strong></td>
+                        <td>${r.origen}</td>
+                        <td>${r.destino}</td>
+                        <td><span style="color: #ffd166;">${r.distancia_km || '-'} km</span></td>
+                        <td>${r.duracion_min ? r.duracion_min + ' min' : '-'}</td>
+                        <td>
+                            <div class="table-actions">
+                                <button class="btn btn-sm" style="background: rgba(0,180,216,0.2); color: #00b4d8; border: 1px solid rgba(0,180,216,0.3);" onclick="editRuta(${r.id})" title="Editar"><i class="fas fa-edit"></i></button>
+                                <button class="btn btn-sm" style="background: rgba(239,71,111,0.2); color: #ef476f; border: 1px solid rgba(239,71,111,0.3);" onclick="deleteRuta(${r.id})" title="Eliminar"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </td>
+                    </tr>`).join('')}</tbody></table>
+            ` : '<div class="empty-state"><i class="fas fa-route"></i><h4>No hay rutas</h4><p>Crea una nueva ruta para comenzar</p></div>';
+        }
+
+        let allAerolineas = [];
+        async function loadAerolineas() {
+            const result = await apiRequest('/aerolineas');
+            const aerolineas = result.data || [];
+            allAerolineas = aerolineas;
+            const container = document.getElementById('aerolineas-list');
+            container.innerHTML = aerolineas.length ? `
+                <table>
+                    <thead>
+                        <tr>
+                            <th><i class="fas fa-building"></i> Nombre</th>
+                            <th><i class="fas fa-code"></i> Código</th>
+                            <th><i class="fas fa-globe"></i> País</th>
+                            <th><i class="fas fa-plane"></i> Vuelos</th>
+                            <th><i class="fas fa-cogs"></i> Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>${aerolineas.map(a => `<tr>
+                        <td><strong style="color: #f72585;">${a.nombre}</strong></td>
+                        <td><span class="table-badge table-badge-primary">${a.codigo || '-'}</span></td>
+                        <td>${a.pais || '-'}</td>
+                        <td><span style="color: #00b4d8; font-weight: 600;">${a.vuelos?.length || 0}</span> vuelos</td>
+                        <td>
+                            <div class="table-actions">
+                                <button class="btn btn-sm" style="background: rgba(0,180,216,0.2); color: #00b4d8; border: 1px solid rgba(0,180,216,0.3);" onclick="editAerolinea(${a.id})" title="Editar"><i class="fas fa-edit"></i></button>
+                                <button class="btn btn-sm" style="background: rgba(239,71,111,0.2); color: #ef476f; border: 1px solid rgba(239,71,111,0.3);" onclick="deleteAerolinea(${a.id})" title="Eliminar"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </td>
+                    </tr>`).join('')}</tbody></table>
+            ` : '<div class="empty-state"><i class="fas fa-building"></i><h4>No hay aerolíneas</h4><p>Agrega una nueva aerolínea para comenzar</p></div>';
+        }
+
+        async function loadMonitoreo() {
+            try {
+                const result = await apiRequest('/vuelos');
+                const vuelos = result.data || [];
+                const vuelosActivos = vuelos.filter(v => v.estado === 'programado' || v.estado === 'en_vuelo');
+                
+                const monitoreos = vuelosActivos.map((v, i) => ({
+                    id: v.id,
+                    vuelo: v,
+                    latitud: -16.5 + (Math.random() * 2 - 1),
+                    longitud: -68.15 + (Math.random() * 3),
+                    altitud_metros: 10000 + Math.floor(Math.random() * 5000),
+                    velocidad_kmh: 450 + Math.floor(Math.random() * 200),
+                    estado_actual: v.estado === 'en_vuelo' ? 'en_vuelo' : 'volando'
+                }));
+                
+                const container = document.getElementById('monitoreo-list');
+                if (monitoreos.length === 0) {
+                    container.innerHTML = '<div class="empty-state"><i class="fas fa-satellite-dish"></i><h4>No hay vuelos activos</h4><p>Crea vuelos para monitorearlos</p></div>';
+                } else {
+                    container.innerHTML = monitoreos.map(m => `
+                        <div style="background: rgba(255,255,255,0.05); border-radius: 12px; padding: 15px; margin-bottom: 10px; border-left: 3px solid #00b4d8;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <strong style="color: #fff; font-size: 1rem;">${m.vuelo.numero_vuelo || 'VUE-' + m.id}</strong>
+                                    <div style="color: rgba(255,255,255,0.6); font-size: 0.85rem;">${m.vuelo.origen || 'Origen'} → ${m.vuelo.destino || 'Destino'}</div>
+                                </div>
+                                <span class="badge badge-primary"><i class="fas fa-plane"></i> ${m.estado_actual === 'en_vuelo' ? 'En Vuelo' : 'Volando'}</span>
+                            </div>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; font-size: 0.8rem; color: rgba(255,255,255,0.7);">
+                                <div><i class="fas fa-ruler-vertical"></i> Altitud: <strong>${m.altitud_metros} m</strong></div>
+                                <div><i class="fas fa-tachometer-alt"></i> Velocidad: <strong>${m.velocidad_kmh} km/h</strong></div>
+                                <div><i class="fas fa-map-marker-alt"></i> Lat: <strong>${m.latitud.toFixed(4)}°</strong></div>
+                                <div><i class="fas fa-map-marker"></i> Lon: <strong>${m.longitud.toFixed(4)}°</strong></div>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+                
+                actualizarMapaAviones(monitoreos);
+            } catch (error) {
+                console.error('Error cargando monitoreo:', error);
+            }
+        }
+
+        function actualizarMapaAviones(monitoreos) {
+            const mapa = document.getElementById('aviones-mapa');
+            if (!mapa) return;
+            
+            const colores = ['#00b4d8', '#f72585', '#06d6a0', '#ffd166', '#ef476f'];
+            
+            mapa.innerHTML = monitoreos.map((m, i) => {
+                const x = 50 + ((m.longitud + 68.15) / 3) * 300;
+                const y = 50 + ((16.5 - m.latitud) / 2) * 250;
+                const color = colores[i % colores.length];
+                const rotacion = Math.random() * 360;
+                
+                return `
+                    <div style="position: absolute; left: ${x}px; top: ${y}px; transform: translate(-50%, -50%) rotate(${rotacion}deg); animation: pulse 2s infinite;">
+                        <i class="fas fa-plane" style="color: ${color}; font-size: 20px;"></i>
+                        <div style="position: absolute; top: -20px; left: 50%; transform: translateX(-50%); white-space: nowrap; font-size: 10px; color: ${color}; font-weight: bold;">${m.vuelo.numero_vuelo || 'VUE-' + m.id}</div>
+                    </div>
+                `;
+            }).join('');
+            
+            monitoreos.forEach((m, i) => {
+                m.latitud += (Math.random() - 0.5) * 0.01;
+                m.longitud += (Math.random() - 0.5) * 0.01;
+                m.altitud_metros += Math.floor((Math.random() - 0.5) * 100);
+                m.velocidad_kmh += Math.floor((Math.random() - 0.5) * 20);
+            });
+        }
+
+        async function deleteVuelo(id) { 
+            if(confirm('¿Cancelar vuelo?')) { 
+                try {
+                    await apiRequest(`/vuelos/${id}`, 'DELETE'); 
+                    loadVuelos(); 
+                } catch(e) { alert(e.message); }
+            }
+        }
+        async function cancelReserva(id) { 
+            if(confirm('¿Cancelar reserva?')) { 
+                try {
+                    await apiRequest(`/reservas/${id}`, 'DELETE'); 
+                    loadReservas(); 
+                } catch(e) { alert(e.message); }
+            }
+        }
+        async function deletePasajero(id) { 
+            if(confirm('¿Eliminar pasajero?')) { 
+                try {
+                    await apiRequest(`/pasajeros/${id}`, 'DELETE'); 
+                    loadPasajeros(); 
+                } catch(e) { alert(e.message); }
+            }
+        }
+        async function deleteNave(id) { 
+            if(confirm('¿Eliminar aeronave?')) { 
+                try {
+                    await apiRequest(`/naves/${id}`, 'DELETE'); 
+                    loadNaves(); 
+                } catch(e) { alert(e.message); }
+            }
+        }
+        async function deleteRuta(id) { 
+            if(confirm('¿Eliminar ruta?')) { 
+                try {
+                    await apiRequest(`/rutas/${id}`, 'DELETE'); 
+                    loadRutas(); 
+                } catch(e) { alert(e.message); }
+            }
+        }
+        async function deleteAerolinea(id) { 
+            if(confirm('¿Eliminar aerolínea?')) { 
+                try {
+                    await apiRequest(`/aerolineas/${id}`, 'DELETE'); 
+                    loadAerolineas(); 
+                } catch(e) { alert(e.message); }
+            }
+        }
+
+        // Funciones de Edición
+        async function editVuelo(id) {
+            const vuelo = allVuelos.find(v => v.id === id);
+            if (!vuelo) return;
+            document.getElementById('vuelo-edit-id').value = id;
+            document.getElementById('vuelo-edit-aerolinea').value = vuelo.aerolinea_id || '';
+            document.getElementById('vuelo-edit-origen').value = vuelo.origen || '';
+            document.getElementById('vuelo-edit-destino').value = vuelo.destino || '';
+            document.getElementById('vuelo-edit-numero').value = vuelo.numero_vuelo || '';
+            document.getElementById('vuelo-edit-fecha-salida').value = vuelo.fecha_salida ? vuelo.fecha_salida.slice(0, 16) : '';
+            document.getElementById('vuelo-edit-fecha-llegada').value = vuelo.fecha_llegada ? vuelo.fecha_llegada.slice(0, 16) : '';
+            const precios = vuelo.precios || {};
+            document.getElementById('vuelo-edit-precio-economica').value = precios.economica || '';
+            document.getElementById('vuelo-edit-precio-business').value = precios.business || '';
+            document.getElementById('vuelo-edit-precio-primera').value = precios.primera || '';
+            document.getElementById('vuelo-edit-estado').value = vuelo.estado || 'programado';
+            await loadAerolineasForSelect();
+            showModal('vuelo-edit-modal');
+        }
+
+        async function updateVuelo(e) {
+            e.preventDefault();
+            const id = document.getElementById('vuelo-edit-id').value;
+            const data = {
+                aerolinea_id: document.getElementById('vuelo-edit-aerolinea').value,
+                origen: document.getElementById('vuelo-edit-origen').value || undefined,
+                destino: document.getElementById('vuelo-edit-destino').value,
+                numero_vuelo: document.getElementById('vuelo-edit-numero').value || undefined,
+                fecha_salida: document.getElementById('vuelo-edit-fecha-salida').value || undefined,
+                fecha_llegada: document.getElementById('vuelo-edit-fecha-llegada').value || undefined,
+                precio_economica: parseFloat(document.getElementById('vuelo-edit-precio-economica').value) || undefined,
+                precio_business: parseFloat(document.getElementById('vuelo-edit-precio-business').value) || undefined,
+                precio_primera: parseFloat(document.getElementById('vuelo-edit-precio-primera').value) || undefined,
+                estado: document.getElementById('vuelo-edit-estado').value
+            };
+            data.precio_base = data.precio_economica || 0;
+            await apiRequest(`/vuelos/${id}`, 'PUT', data);
+            hideModal('vuelo-edit-modal'); loadVuelos();
+        }
+
+        async function editReserva(id) {
+            const reserva = allReservas.find(r => r.id === id);
+            if (!reserva) return;
+            document.getElementById('reserva-edit-id').value = id;
+            document.getElementById('reserva-edit-usuario').value = reserva.usuario_id || '';
+            document.getElementById('reserva-edit-vuelo').value = reserva.vuelo_id || '';
+            document.getElementById('reserva-edit-pasajeros').value = reserva.cantidad_pasajeros || 1;
+            document.getElementById('reserva-edit-estado').value = reserva.estado || 'pendiente';
+            await loadVuelosForSelect();
+            await loadUsuariosForSelect();
+            showModal('reserva-edit-modal');
+        }
+
+        async function updateReserva(e) {
+            e.preventDefault();
+            const id = document.getElementById('reserva-edit-id').value;
+            await apiRequest(`/reservas/${id}`, 'PUT', {
+                usuario_id: document.getElementById('reserva-edit-usuario').value,
+                vuelo_id: document.getElementById('reserva-edit-vuelo').value,
+                cantidad_pasajeros: parseInt(document.getElementById('reserva-edit-pasajeros').value),
+                estado: document.getElementById('reserva-edit-estado').value
+            });
+            hideModal('reserva-edit-modal'); loadReservas();
+        }
+
+        async function editPasajero(id) {
+            const pasajero = allPasajeros.find(p => p.id === id);
+            if (!pasajero) return;
+            document.getElementById('pasajero-edit-id').value = id;
+            document.getElementById('pasajero-edit-vuelo').value = pasajero.vuelo_id || '';
+            document.getElementById('pasajero-edit-nombre').value = pasajero.nombre_completo || '';
+            document.getElementById('pasajero-edit-dni').value = pasajero.dni || '';
+            document.getElementById('pasajero-edit-email').value = pasajero.email || '';
+            document.getElementById('pasajero-edit-clase').value = pasajero.clase || 'economica';
+            document.getElementById('pasajero-edit-asiento').value = pasajero.asiento || '';
+            document.getElementById('pasajero-edit-estado').value = pasajero.estado_reserva || 'confirmada';
+            await loadVuelosForSelect();
+            showModal('pasajero-edit-modal');
+        }
+
+        async function updatePasajero(e) {
+            e.preventDefault();
+            const id = document.getElementById('pasajero-edit-id').value;
+            await apiRequest(`/pasajeros/${id}`, 'PUT', {
+                vuelo_id: document.getElementById('pasajero-edit-vuelo').value,
+                nombre_completo: document.getElementById('pasajero-edit-nombre').value,
+                dni: document.getElementById('pasajero-edit-dni').value || undefined,
+                email: document.getElementById('pasajero-edit-email').value || undefined,
+                clase: document.getElementById('pasajero-edit-clase').value,
+                asiento: document.getElementById('pasajero-edit-asiento').value || undefined,
+                estado_reserva: document.getElementById('pasajero-edit-estado').value
+            });
+            hideModal('pasajero-edit-modal'); loadPasajeros();
+        }
+
+        async function editNave(id) {
+            const nave = allNaves.find(n => n.id === id);
+            if (!nave) return;
+            document.getElementById('nave-edit-id').value = id;
+            document.getElementById('nave-edit-aerolinea').value = nave.aerolinea_id || '';
+            document.getElementById('nave-edit-matricula').value = nave.matricula || '';
+            document.getElementById('nave-edit-modelo').value = nave.modelo || '';
+            document.getElementById('nave-edit-capacidad').value = nave.capacidad || '';
+            document.getElementById('nave-edit-estado').value = nave.estado || 'activo';
+            await loadAerolineasForSelect();
+            showModal('nave-edit-modal');
+        }
+
+        async function updateNave(e) {
+            e.preventDefault();
+            const id = document.getElementById('nave-edit-id').value;
+            await apiRequest(`/naves/${id}`, 'PUT', {
+                aerolinea_id: document.getElementById('nave-edit-aerolinea').value || undefined,
+                matricula: document.getElementById('nave-edit-matricula').value,
+                modelo: document.getElementById('nave-edit-modelo').value,
+                capacidad: parseInt(document.getElementById('nave-edit-capacidad').value),
+                estado: document.getElementById('nave-edit-estado').value
+            });
+            hideModal('nave-edit-modal'); loadNaves();
+        }
+
+        async function editRuta(id) {
+            const ruta = allRutas.find(r => r.id === id);
+            if (!ruta) return;
+            document.getElementById('ruta-edit-id').value = id;
+            document.getElementById('ruta-edit-origen').value = ruta.origen || '';
+            document.getElementById('ruta-edit-destino').value = ruta.destino || '';
+            document.getElementById('ruta-edit-codigo-origen').value = ruta.codigo_origen || '';
+            document.getElementById('ruta-edit-codigo-destino').value = ruta.codigo_destino || '';
+            document.getElementById('ruta-edit-distancia').value = ruta.distancia_km || '';
+            document.getElementById('ruta-edit-duracion').value = ruta.duracion_min || '';
+            showModal('ruta-edit-modal');
+        }
+
+        async function updateRuta(e) {
+            e.preventDefault();
+            const id = document.getElementById('ruta-edit-id').value;
+            await apiRequest(`/rutas/${id}`, 'PUT', {
+                origen: document.getElementById('ruta-edit-origen').value,
+                destino: document.getElementById('ruta-edit-destino').value,
+                codigo_origen: document.getElementById('ruta-edit-codigo-origen').value,
+                codigo_destino: document.getElementById('ruta-edit-codigo-destino').value,
+                distancia_km: parseInt(document.getElementById('ruta-edit-distancia').value) || undefined,
+                duracion_min: parseInt(document.getElementById('ruta-edit-duracion').value) || undefined
+            });
+            hideModal('ruta-edit-modal'); loadRutas();
+        }
+
+        async function editAerolinea(id) {
+            const aerolinea = allAerolineas.find(a => a.id === id);
+            if (!aerolinea) return;
+            document.getElementById('aerolinea-edit-id').value = id;
+            document.getElementById('aerolinea-edit-nombre').value = aerolinea.nombre || '';
+            document.getElementById('aerolinea-edit-codigo').value = aerolinea.codigo || '';
+            document.getElementById('aerolinea-edit-pais').value = aerolinea.pais || '';
+            showModal('aerolinea-edit-modal');
+        }
+
+        async function updateAerolinea(e) {
+            e.preventDefault();
+            const id = document.getElementById('aerolinea-edit-id').value;
+            await apiRequest(`/aerolineas/${id}`, 'PUT', {
+                nombre: document.getElementById('aerolinea-edit-nombre').value,
+                codigo: document.getElementById('aerolinea-edit-codigo').value || undefined,
+                pais: document.getElementById('aerolinea-edit-pais').value || undefined
+            });
+            hideModal('aerolinea-edit-modal'); loadAerolineas();
+        }
+
+        async function createVuelo(e) {
+            e.preventDefault();
+            const data = {
+                aerolinea_id: document.getElementById('vuelo-aerolinea').value,
+                origen: document.getElementById('vuelo-origen').value || undefined,
+                destino: document.getElementById('vuelo-destino').value,
+                numero_vuelo: document.getElementById('vuelo-numero').value || undefined,
+                fecha_salida: document.getElementById('vuelo-fecha-salida').value || undefined,
+                fecha_llegada: document.getElementById('vuelo-fecha-llegada').value || undefined,
+                precio_economica: parseFloat(document.getElementById('vuelo-precio-economica').value) || undefined,
+                precio_business: parseFloat(document.getElementById('vuelo-precio-business').value) || undefined,
+                precio_primera: parseFloat(document.getElementById('vuelo-precio-primera').value) || undefined,
+            };
+            data.precio_base = data.precio_economica || 0;
+            await apiRequest('/vuelos', 'POST', data);
+            hideModal('vuelo-modal'); loadVuelos(); e.target.reset();
+        }
+
+        async function createReserva(e) {
+            e.preventDefault();
+            await apiRequest('/reservas', 'POST', {
+                usuario_id: document.getElementById('reserva-usuario').value,
+                vuelo_id: document.getElementById('reserva-vuelo').value,
+                cantidad_pasajeros: parseInt(document.getElementById('reserva-pasajeros').value)
+            });
+            hideModal('reserva-modal'); loadReservas(); e.target.reset();
+        }
+
+        async function createPasajero(e) {
+            e.preventDefault();
+            await apiRequest('/pasajeros', 'POST', {
+                vuelo_id: document.getElementById('pasajero-vuelo').value,
+                nombre_completo: document.getElementById('pasajero-nombre').value,
+                dni: document.getElementById('pasajero-dni').value || undefined,
+                email: document.getElementById('pasajero-email').value || undefined,
+                clase: document.getElementById('pasajero-clase').value,
+                asiento: document.getElementById('pasajero-asiento').value || undefined
+            });
+            pasajeroAsientoSeleccionado = '';
+            hideModal('pasajero-modal'); loadPasajeros(); e.target.reset();
+        }
+
+        async function createNave(e) {
+            e.preventDefault();
+            await apiRequest('/naves', 'POST', {
+                aerolinea_id: document.getElementById('nave-aerolinea').value || undefined,
+                matricula: document.getElementById('nave-matricula').value,
+                modelo: document.getElementById('nave-modelo').value,
+                capacidad: parseInt(document.getElementById('nave-capacidad').value),
+                estado: document.getElementById('nave-estado').value
+            });
+            hideModal('nave-modal'); loadNaves(); e.target.reset();
+        }
+
+        async function createRuta(e) {
+            e.preventDefault();
+            await apiRequest('/rutas', 'POST', {
+                origen: document.getElementById('ruta-origen').value,
+                destino: document.getElementById('ruta-destino').value,
+                codigo_origen: document.getElementById('ruta-codigo-origen').value,
+                codigo_destino: document.getElementById('ruta-codigo-destino').value,
+                distancia_km: parseInt(document.getElementById('ruta-distancia').value) || undefined,
+                duracion_min: parseInt(document.getElementById('ruta-duracion').value) || undefined
+            });
+            hideModal('ruta-modal'); loadRutas(); e.target.reset();
+        }
+
+        async function createAerolinea(e) {
+            e.preventDefault();
+            await apiRequest('/aerolineas', 'POST', {
+                nombre: document.getElementById('aerolinea-nombre').value,
+                codigo: document.getElementById('aerolinea-codigo').value || undefined,
+                pais: document.getElementById('aerolinea-pais').value || undefined
+            });
+            hideModal('aerolinea-modal'); loadAerolineas(); e.target.reset();
+        }
+
+        async function loadAerolineasForSelect() {
+            const result = await apiRequest('/aerolineas');
+            const aerolineas = result.data || [];
+            const opts = '<option value="">Seleccionar...</option>' + aerolineas.map(a => `<option value="${a.id}">${a.nombre}</option>`).join('');
+            document.getElementById('vuelo-aerolinea').innerHTML = opts;
+            document.getElementById('nave-aerolinea').innerHTML = opts;
+            if(document.getElementById('vuelo-edit-aerolinea')) document.getElementById('vuelo-edit-aerolinea').innerHTML = opts;
+        }
+
+        async function loadVuelosForSelect() {
+            const result = await apiRequest('/vuelos');
+            const vuelos = result.data || [];
+            const opts = '<option value="">Seleccionar...</option>' + vuelos.map(v => `<option value="${v.id}">${v.numero_vuelo} - ${v.destino}</option>`).join('');
+            document.getElementById('reserva-vuelo').innerHTML = opts;
+            document.getElementById('pasajero-vuelo').innerHTML = opts;
+            if(document.getElementById('reserva-edit-vuelo')) document.getElementById('reserva-edit-vuelo').innerHTML = opts;
+            if(document.getElementById('pasajero-edit-vuelo')) document.getElementById('pasajero-edit-vuelo').innerHTML = opts;
+        }
+
+        async function loadUsuariosForSelect() {
+            const result = await apiRequest('/usuarios');
+            const usuarios = result.data || [];
+            const opts = '<option value="">Seleccionar...</option>' + usuarios.map(u => `<option value="${u.id}">${u.nombre}</option>`).join('');
+            document.getElementById('reserva-usuario').innerHTML = opts;
+            if(document.getElementById('reserva-edit-usuario')) document.getElementById('reserva-edit-usuario').innerHTML = opts;
+        }
+
+        function showPage(page) {
+            document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
+            document.getElementById(`page-${page}`).style.display = 'block';
+            
+            switch(page) {
+                case 'dashboard': loadDashboardData(); break;
+                case 'usuarios': loadUsuarios(); break;
+                case 'vuelos': loadVuelos(); loadAerolineasForSelect(); break;
+                case 'reservas': loadReservas(); loadVuelosForSelect(); loadUsuariosForSelect(); break;
+                case 'pasajeros': loadPasajeros(); loadVuelosForSelect(); break;
+                case 'naves': loadNaves(); loadAerolineasForSelect(); break;
+                case 'rutas': loadRutas(); break;
+                case 'aerolineas': loadAerolineas(); break;
+                case 'monitoreo': startMonitoreo(); break;
+            }
+        }
+
+        document.querySelectorAll('.sidebar-menu a').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                document.querySelectorAll('.sidebar-menu a').forEach(l => l.classList.remove('active'));
+                this.classList.add('active');
+                showPage(this.getAttribute('data-page'));
+            });
+        });
+
+        document.querySelectorAll('.modal-overlay').forEach(modal => {
+            modal.addEventListener('click', function(e) { if(e.target === this) this.classList.remove('active'); });
+        });
+
+        if (!checkRole()) {
+            window.location.href = 'index.html';
+        } else {
+            showDashboardView();
+        }
+    </script>
+</body>
+</html>
