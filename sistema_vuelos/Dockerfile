@@ -1,18 +1,18 @@
-FROM php:8.3-fpm
+FROM php:8.3-fpm-alpine
 
 WORKDIR /var/www/html
 
-RUN apt-get update && apt-get install -y \
+RUN apk add --no-cache \
     git \
     unzip \
     libzip-dev \
-    zlib1g-dev \
-    libicu-dev \
-    libonig-dev \
+    zlib-dev \
+    icu-dev \
+    oniguruma-dev \
     libxml2-dev \
     libpng-dev \
-    libjpeg-dev \
-    libfreetype6-dev \
+    libjpeg-turbo-dev \
+    freetype-dev \
     curl
 
 RUN docker-php-ext-install pdo pdo_mysql mbstring bcmath tokenizer xml ctype zip
