@@ -1,4 +1,4 @@
-FROM php:8.2-fpm
+FROM php:8.3-fpm
 
 WORKDIR /var/www/html
 
@@ -13,8 +13,7 @@ RUN apt-get update && apt-get install -y \
     libpng-dev \
     libjpeg-dev \
     libfreetype6-dev \
-    curl \
-    && rm -rf /var/lib/apt/lists/*
+    curl
 
 RUN docker-php-ext-install pdo pdo_mysql mbstring bcmath tokenizer xml ctype zip
 
