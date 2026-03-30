@@ -1111,9 +1111,24 @@
                     }
                 }
                 
-                vuelosDisponibles = vuelos.filter(v => v.estado === 'programado');
+                const ahora = new Date();
                 
-                if (vuelosDisponibles.length === 0) {
+                const vuelosActivos = [];
+                const vuelosAgotados = [];
+                
+                vuelos.forEach(v => {
+                    if (v.estado !== 'programado' || !v.fecha_salida) return;
+                    const fechaSalida = new Date(v.fecha_salida);
+                    if (fechaSalida > ahora) {
+                        vuelosActivos.push(v);
+                    } else {
+                        vuelosAgotados.push(v);
+                    }
+                });
+                
+                vuelosDisponibles = vuelosActivos;
+                
+                if (vuelosActivos.length === 0 && vuelosAgotados.length === 0) {
                     container.innerHTML = `
                         <div class="empty-state">
                             <i class="fas fa-search"></i>
@@ -1124,9 +1139,11 @@
                     return;
                 }
                 
-                container.innerHTML = `
-                    <h3 style="margin-bottom: 20px;">${vuelosDisponibles.length} vuelos disponibles</h3>
-                    ${vuelosDisponibles.map(v => `
+                let html = '';
+                
+                if (vuelosActivos.length > 0) {
+                    html += `<h3 style="margin-bottom: 20px;">${vuelosActivos.length} vuelos disponibles</h3>`;
+                    html += vuelosActivos.map(v => `
                         <div class="flight-card">
                             <div class="flight-info">
                                 <h3>${v.numero_vuelo || 'Vuelo'}</h3>
@@ -1163,8 +1180,52 @@
                                 <div class="flight-detail"><i class="fas fa-clock"></i> ${v.fecha_salida ? new Date(v.fecha_salida).toLocaleDateString() : 'Sin fecha'}</div>
                             </div>
                         </div>
-                    `).join('')}
-                `;
+                    `).join('');
+                }
+                
+                if (vuelosAgotados.length > 0) {
+                    if (vuelosActivos.length > 0) {
+                        html += `<h3 style="margin-bottom: 20px; margin-top: 30px; color: rgba(255,255,255,0.5);">Vuelos Agotados (yaPartieron)</h3>`;
+                    } else {
+                        html += `<h3 style="margin-bottom: 20px;">No hay vuelos disponibles</h3>`;
+                        html += `<h4 style="margin-bottom: 20px; color: rgba(255,255,255,0.5);">Vuelos Agotados (yaPartieron)</h4>`;
+                    }
+                    html += vuelosAgotados.map(v => `
+                        <div class="flight-card" style="opacity: 0.6; border: 1px solid rgba(239,71,111,0.3);">
+                            <div class="flight-info">
+                                <h3>${v.numero_vuelo || 'Vuelo'}</h3>
+                                <div class="airline">
+                                    <i class="fas fa-building"></i>
+                                    ${v.aerolinea?.nombre || 'Aerolínea'}
+                                </div>
+                            </div>
+                            <div class="flight-route">
+                                <div class="flight-time">
+                                    <div class="time">${v.fecha_salida ? new Date(v.fecha_salida).toLocaleTimeString('es-ES', {hour:'2-digit', minute:'2-digit'}) : '--:--'}</div>
+                                    <div class="city">${v.ruta?.codigo_origen || 'ORI'}</div>
+                                </div>
+                                <div class="flight-arrow">
+                                    <i class="fas fa-arrow-right"></i>
+                                </div>
+                                <div class="flight-time">
+                                    <div class="time">${v.fecha_llegada ? new Date(v.fecha_llegada).toLocaleTimeString('es-ES', {hour:'2-digit', minute:'2-digit'}) : '--:--'}</div>
+                                    <div class="city">${v.ruta?.codigo_destino || 'DEST'}</div>
+                                </div>
+                            </div>
+                            <div class="flight-price">
+                                <span class="table-badge table-badge-danger" style="font-size: 1rem; padding: 8px 16px;">
+                                    <i class="fas fa-clock"></i> AGOTADO
+                                </span>
+                            </div>
+                            <div class="flight-details-grid">
+                                <div class="flight-detail"><i class="fas fa-map-marker-alt"></i> ${v.destino}</div>
+                                <div class="flight-detail"><i class="fas fa-clock"></i> ${v.fecha_salida ? new Date(v.fecha_salida).toLocaleDateString() : 'Sin fecha'}</div>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+                
+                container.innerHTML = html;
             } catch (error) {
                 container.innerHTML = `<div class="alert alert-error" style="display: block;">Error: ${error.message}</div>`;
             }
@@ -1174,7 +1235,17 @@
         
         function abrirReserva(vueloId) {
             const vuelo = vuelosDisponibles.find(v => v.id === vueloId);
-            if (!vuelo) return;
+            if (!vuelo) {
+                alert('Este vuelo ya ha partido y no está disponible para reservación.');
+                return;
+            }
+            
+            const ahora = new Date();
+            const fechaSalida = new Date(vuelo.fecha_salida);
+            if (fechaSalida <= ahora) {
+                alert('Este vuelo ya ha partido y no está disponible para reservación.');
+                return;
+            }
             
             asientosSeleccionados = [];
             document.getElementById('reserva-vuelo-id').value = vueloId;
