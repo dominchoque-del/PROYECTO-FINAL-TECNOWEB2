@@ -1,14 +1,10 @@
-# Imagen base con PHP 8.3 CLI
-FROM php:8.3-cli
+FROM php:8.2-fpm
 
-# Evitar preguntas interactivas
-ENV DEBIAN_FRONTEND=noninteractive
+WORKDIR /var/www/html
 
-# Instalar dependencias del sistema y extensiones de PHP necesarias
 RUN apt-get update && apt-get install -y \
     git \
     unzip \
-    curl \
     libzip-dev \
     zlib1g-dev \
     libicu-dev \
@@ -17,35 +13,19 @@ RUN apt-get update && apt-get install -y \
     libpng-dev \
     libjpeg-dev \
     libfreetype6-dev \
+    libcurl4-openssl-dev \
+    pkg-config \
+    libssl-dev \
+    && rm -rf /var/lib/apt/lists/* \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install \
-        pdo \
-        pdo_mysql \
-        mbstring \
-        bcmath \
-        tokenizer \
-        xml \
-        ctype \
-        zip \
-        gd \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+    && docker-php-ext-install pdo pdo_mysql mbstring bcmath tokenizer xml ctype zip gd
 
-# Instalar Composer desde su imagen oficial
-COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Crear directorio de la aplicación
-WORKDIR /app
-
-# Copiar archivos de Composer y hacer install
-COPY composer.json composer.lock ./
-RUN composer install --no-dev --optimize-autoloader
-
-# Copiar resto del proyecto
 COPY . .
 
-# Exponer puerto para desarrollo
+RUN composer install --no-dev --optimize-autoloader
+
 EXPOSE 8000
 
-# Comando para arrancar Laravel
 CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]
