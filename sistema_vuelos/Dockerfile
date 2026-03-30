@@ -13,12 +13,10 @@ RUN apt-get update && apt-get install -y \
     libpng-dev \
     libjpeg-dev \
     libfreetype6-dev \
-    libcurl4-openssl-dev \
-    pkg-config \
-    libssl-dev \
-    && rm -rf /var/lib/apt/lists/* \
-    && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install pdo pdo_mysql mbstring bcmath tokenizer xml ctype zip gd
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN docker-php-ext-install pdo pdo_mysql mbstring bcmath tokenizer xml ctype zip
 
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
